@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28010.2048
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScreenMagic", "ScreenMagic\ScreenMagic.csproj", "{50ADE7D3-13E9-4743-87BD-52C48101DBFB}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{50ADE7D3-13E9-4743-87BD-52C48101DBFB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{50ADE7D3-13E9-4743-87BD-52C48101DBFB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{50ADE7D3-13E9-4743-87BD-52C48101DBFB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{50ADE7D3-13E9-4743-87BD-52C48101DBFB}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {443BD1CC-AD08-4125-AEB8-1CEA902A9DBA}
+	EndGlobalSection
+EndGlobal
