@@ -7,7 +7,13 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Grid>
-        <Button x:Name="Execute" Content="Execute" HorizontalAlignment="Left" Margin="25,35,0,0" VerticalAlignment="Top" Width="75" Click="Execute_Click"/>
-
+        <StackPanel x:Name="Divider" Orientation="Vertical">
+            <StackPanel x:Name="Divider2" Orientation="Vertical">
+            <Button x:Name="Execute" Content="Execute" HorizontalAlignment="Left" Margin="25,35,0,0" VerticalAlignment="Top" Width="75" Click="Execute_Click"/>
+            </StackPanel>
+            <StackPanel x:Name="Divider3" Orientation="Vertical">
+                <Image x:Name="MainImage" Height="350" Margin="25,25,25,25"/>
+            </StackPanel>
+        </StackPanel>
     </Grid>
 </Window>

@@ -20,18 +20,42 @@ namespace ScreenMagic
     /// </summary>
     public partial class MainWindow : Window
     {
+        private IntPtr _windowToWatch = IntPtr.Zero;
+        private System.Timers.Timer _timer;
         public MainWindow()
         {
             InitializeComponent();
+            _timer = new System.Timers.Timer(1000);
+            _timer.Elapsed += _timer_Elapsed;
         }
 
         private void Execute_Click(object sender, RoutedEventArgs e)
         {
-            IntPtr handle = Utils.Activate();
-            System.Threading.Thread.Sleep(1000);
-            var screen = Utils.CaptureScreenshot(handle);
             
-            screen.Save(@"C:\Users\gerhas\Desktop\t1.jpg", System.Drawing.Imaging.ImageFormat.Jpeg);
+            _windowToWatch = Utils.Activate();
+            if (_windowToWatch != IntPtr.Zero)
+            {
+                System.Threading.Thread.Sleep(2000);
+                _timer.Start();
+
+            }
+        }
+
+        private void _timer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
+        {
+            Application.Current.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal,
+                 new Action(() => this.Update()));
+
+        }
+
+        private void Update( )
+        {
+            var screen = Utils.CaptureScreenshot(_windowToWatch);
+            MainImage.Source = Utils.ImageSourceForBitmap(screen);
+
+            //Application.Current.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal,
+            //        new Action(() => this.Update()));
+
         }
     }
 }
