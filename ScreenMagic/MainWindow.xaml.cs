@@ -24,5 +24,14 @@ namespace ScreenMagic
         {
             InitializeComponent();
         }
+
+        private void Execute_Click(object sender, RoutedEventArgs e)
+        {
+            IntPtr handle = Utils.Activate();
+            System.Threading.Thread.Sleep(1000);
+            var screen = Utils.CaptureScreenshot(handle);
+            
+            screen.Save(@"C:\Users\gerhas\Desktop\t1.jpg", System.Drawing.Imaging.ImageFormat.Jpeg);
+        }
     }
 }
