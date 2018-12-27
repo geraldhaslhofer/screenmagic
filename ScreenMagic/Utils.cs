@@ -55,6 +55,14 @@ namespace ScreenMagic
             finally { DeleteObject(handle); }
         }
 
+        public static string GetAssemblyPath()
+        {
+            string execAssembly = System.Reflection.Assembly.GetExecutingAssembly().Location;
+            string basePath = System.IO.Path.GetDirectoryName(execAssembly);
+            return basePath;
+
+        }
+
         [DllImport("user32.dll")]
         private static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
 

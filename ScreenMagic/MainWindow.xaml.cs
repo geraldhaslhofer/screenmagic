@@ -37,7 +37,6 @@ namespace ScreenMagic
             {
                 System.Threading.Thread.Sleep(2000);
                 _timer.Start();
-
             }
         }
 
@@ -45,17 +44,17 @@ namespace ScreenMagic
         {
             Application.Current.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal,
                  new Action(() => this.Update()));
-
         }
 
         private void Update( )
         {
             var screen = Utils.CaptureScreenshot(_windowToWatch);
             MainImage.Source = Utils.ImageSourceForBitmap(screen);
+        }
 
-            //Application.Current.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal,
-            //        new Action(() => this.Update()));
-
+        private void OCR_Click(object sender, RoutedEventArgs e)
+        {
+            var result = OcrUtils.CatpureImage(@"C:\Users\gerhas\Desktop\tes.jpg");
         }
     }
 }
