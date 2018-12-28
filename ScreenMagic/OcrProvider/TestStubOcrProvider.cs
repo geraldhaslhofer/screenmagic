@@ -10,7 +10,7 @@ namespace ScreenMagic
 {
     class TestStubOcrProvider : IOcrResultProvider
     {
-        Task<JToken> IOcrResultProvider.MakeOCRRequest(string imageFilePath)
+        Task<JToken> IOcrResultProvider.MakeOCRRequest(byte[] jpegEncoded)
         {
             string responsePath = Path.Combine(Utils.GetAssemblyPath(), "Assets\\response.txt");
             StreamReader r = new StreamReader(responsePath);

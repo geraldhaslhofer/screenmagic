@@ -8,7 +8,7 @@ namespace ScreenMagic
 {
     class OcrProviderFactory
     {
-        private static bool _isTest = true;
+        private static bool _isTest = false;
 
         public static IOcrResultProvider GetOcrResultsProvider()
         {

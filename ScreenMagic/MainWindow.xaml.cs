@@ -25,7 +25,7 @@ namespace ScreenMagic
         public MainWindow()
         {
             InitializeComponent();
-            _timer = new System.Timers.Timer(1000);
+            _timer = new System.Timers.Timer(10000);
             _timer.Elapsed += _timer_Elapsed;
         }
 
@@ -46,15 +46,21 @@ namespace ScreenMagic
                  new Action(() => this.Update()));
         }
 
-        private void Update( )
+        private async void Update( )
         {
             var screen = Utils.CaptureScreenshot(_windowToWatch);
-            MainImage.Source = Utils.ImageSourceForBitmap(screen);
+
+            var imageSource = Utils.ImageSourceForBitmap(screen);
+            byte[] jpegEncodedImage = Utils.SerializeBitmapToJpeg(screen);
+            
+            var results = await OcrUtils.GetOcrResults(jpegEncodedImage);
+
+            MainImage.Source = RenderUtils.DrawTextItems(imageSource, results);
         }
 
         private void OCR_Click(object sender, RoutedEventArgs e)
         {
-            var result = OcrUtils.CatpureImage(@"C:\Users\gerhas\Desktop\tes.jpg");
+            //var result = OcrUtils.CatpureImage(@"C:\Users\gerhas\Desktop\tes.jpg");
         }
     }
 }

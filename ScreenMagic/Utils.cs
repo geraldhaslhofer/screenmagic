@@ -7,11 +7,19 @@ using System.Windows.Media;
 using System.Windows.Interop;
 using System.Windows;
 using System.Windows.Media.Imaging;
+using System.IO;
 
 namespace ScreenMagic
 {
     class Utils
     {
+        public static byte[] SerializeBitmapToJpeg(Bitmap bmp)
+        {
+            MemoryStream ms = new MemoryStream();
+            bmp.Save(ms, ImageFormat.Jpeg);
+            return ms.ToArray();
+
+        }
         public static IntPtr Activate()
         {
             var prc = Process.GetProcessesByName("outlook");
@@ -45,7 +53,7 @@ namespace ScreenMagic
             return bmp;
         }
 
-        public static ImageSource ImageSourceForBitmap(Bitmap bmp)
+        public static BitmapSource ImageSourceForBitmap(Bitmap bmp)
         {
             var handle = bmp.GetHbitmap();
             try

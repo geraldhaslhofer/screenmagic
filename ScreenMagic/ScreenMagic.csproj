@@ -76,6 +76,7 @@
     <Compile Include="OcrResults.cs" />
     <Compile Include="OcrUtils.cs" />
     <Compile Include="Rect.cs" />
+    <Compile Include="RenderUtils.cs" />
     <Compile Include="Utils.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>

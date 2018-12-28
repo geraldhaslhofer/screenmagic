@@ -8,21 +8,18 @@ namespace ScreenMagic
 {
     class OcrUtils
     {
-        public async static Task<string> CatpureImage(string imagePath)
+        public async static Task<OcrResults> GetOcrResults(byte[] jpegEncoded)
         {
             IOcrResultProvider anOCR = OcrProviderFactory.GetOcrResultsProvider();
 
-            var x = await anOCR.MakeOCRRequest(imagePath);
+            var x = await anOCR.MakeOCRRequest(jpegEncoded);
             OcrResults results = new OcrResults();
             results.Results = new List<OcrResult>();
             List<BoundingBox> boxes = new List<BoundingBox>();
             JsonHelpers.GetBoundingBoxes(x, boxes);
             JsonHelpers.GetTextElements(x, results);
             results.BoundingBoxes = boxes;
-
-            //string content = x.ToString();
-            //Serializers.Serialize(Contracts.Serializers.GetOcrResultsPath(id), results);
-            return imagePath;
+            return results;
         }
 
     }

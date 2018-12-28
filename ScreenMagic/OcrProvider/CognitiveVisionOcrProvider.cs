@@ -29,7 +29,7 @@ namespace ScreenMagic
         /// the Computer Vision REST API.
         /// </summary>
         /// <param name="imageFilePath">The image file with printed text.</param>
-        public async Task<JToken> MakeOCRRequest(string imageFilePath)
+        public async Task<JToken> MakeOCRRequest(byte[] jpegEncoded)
         {
             try
             {
@@ -48,9 +48,9 @@ namespace ScreenMagic
                 HttpResponseMessage response;
 
                 // Request body. Posts a locally stored JPEG image.
-                byte[] byteData = GetImageAsByteArray(imageFilePath);
+                //byte[] byteData = GetImageAsByteArray(imageFilePath);
 
-                using (ByteArrayContent content = new ByteArrayContent(byteData))
+                using (ByteArrayContent content = new ByteArrayContent(jpegEncoded))
                 {
                     // This example uses content type "application/octet-stream".
                     // The other content types you can use are "application/json"

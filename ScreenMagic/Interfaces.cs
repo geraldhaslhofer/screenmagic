@@ -9,6 +9,6 @@ namespace ScreenMagic
 {
     interface IOcrResultProvider
     {
-        Task<JToken> MakeOCRRequest(string imageFilePath);
+        Task<JToken> MakeOCRRequest(byte[] jpegEncoded);
     }
 }
