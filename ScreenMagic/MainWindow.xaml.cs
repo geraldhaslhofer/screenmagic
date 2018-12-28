@@ -33,13 +33,30 @@ namespace ScreenMagic
 
             _timer = new System.Timers.Timer(10000);
             _timer.Elapsed += _timer_Elapsed;
+            this.SizeChanged += MainWindow_SizeChanged;
+            this.StateChanged += MainWindow_StateChanged;
+        }
+
+        private void MainWindow_StateChanged(object sender, EventArgs e)
+        {
+            UpdateLayoutElements();
+        }
+        private void UpdateLayoutElements()
+        {
+            MainImage.Height = this.Height - 20;
+            MainImage.Width = this.Width - 20;
+        }
+        private void MainWindow_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            UpdateLayoutElements();
         }
 
         private void Execute_Click(object sender, RoutedEventArgs e)
         {    
             Utils.Activate();
             System.Threading.Thread.Sleep(2000);
-            _timer.Start();
+            Update();
+            //_timer.Start();
         }
 
         private void _timer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
@@ -48,7 +65,7 @@ namespace ScreenMagic
                  new Action(() => this.Update()));
         }
 
-        private async void Update( )
+        private async void Update()
         {
             var screen = _bitmapProvider.CaptureScreenshot();
             var imageSource = Utils.ImageSourceForBitmap(screen);

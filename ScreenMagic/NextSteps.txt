@@ -1,0 +1,3 @@
+﻿Adjust bitmap size depending on app size (auto scale)
+Allow any app to be tracked
+Ensure update sequence can be managed (low bandwidth)

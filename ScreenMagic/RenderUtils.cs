@@ -7,6 +7,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows;
 using System.Drawing;
+using System.IO;
 
 namespace ScreenMagic
 {
@@ -37,6 +38,10 @@ namespace ScreenMagic
 
             using (var r = visual.RenderOpen())
             {
+                //render background
+                BitmapSource bg = GetImageFromPath(Path.Combine(Utils.GetAssemblyPath(), "Assets\\background.jpg"));
+                r.DrawImage(bg, new Rect(0, 0, bmp.Width, bmp.Height));
+                
 
                 foreach (var ocrResult in results.Results)
                 {

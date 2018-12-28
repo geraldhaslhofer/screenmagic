@@ -9,6 +9,6 @@ namespace ScreenMagic
     class Modes
     {
         public static bool IsTest()
-        { return true; }
+        { return false; }
     }
 }
