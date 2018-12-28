@@ -6,18 +6,20 @@ using System.Threading.Tasks;
 
 namespace ScreenMagic
 {
-    class OcrProviderFactory
+    class BitmapProviderFactory
     {
-        public static IOcrResultProvider GetOcrResultsProvider()
+
+        public static IBitmapProvider GetBitmapProvider()
         {
             if (Modes.IsTest())
             {
-                return new TestStubOcrProvider();
+                return new TestStubScreenshotProvider();
             }
             else
             {
-                return new CognitiveVisionOcrProvider();
+                return new AppScreenshotProvider();
             }
         }
     }
 }
+

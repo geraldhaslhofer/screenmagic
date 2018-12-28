@@ -20,19 +20,25 @@ namespace ScreenMagic
             return ms.ToArray();
 
         }
-        public static IntPtr Activate()
+
+        public static IntPtr GetWindowHandleFromApp(string app)
         {
-            var prc = Process.GetProcessesByName("outlook");
+            var prc = Process.GetProcessesByName(app);
             if (prc.Length > 0)
             {
-                //(prc[0].MainWindowHandle);
-                IntPtr handle = prc[0].MainWindowHandle;
-                SetForegroundWindow(handle);
-                //ShowWindow(handle, 1);
-                return handle;
-                
+                return prc[0].MainWindowHandle;
+
             }
             return IntPtr.Zero;
+        }
+
+        public static void Activate()
+        {
+            IntPtr handle = GetWindowHandleFromApp("outlook");
+            if (handle != IntPtr.Zero)
+            {
+                SetForegroundWindow(handle);
+            }
         }
         public static Bitmap CaptureScreenshot(IntPtr windowHandle)
         {

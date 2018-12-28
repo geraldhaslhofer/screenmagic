@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,5 +11,9 @@ namespace ScreenMagic
     interface IOcrResultProvider
     {
         Task<JToken> MakeOCRRequest(byte[] jpegEncoded);
+    }
+    interface IBitmapProvider
+    {
+        Bitmap CaptureScreenshot();
     }
 }

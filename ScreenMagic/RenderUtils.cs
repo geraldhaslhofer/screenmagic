@@ -20,6 +20,25 @@ namespace ScreenMagic
 
             return bitmap;
         }
+        public static BitmapSource DrawOriginalBmps(BitmapSource bmp, OcrResults results)
+        {
+
+            // bmp is the original BitmapImage
+            var target = new RenderTargetBitmap(bmp.PixelWidth, bmp.PixelHeight, bmp.DpiX, bmp.DpiY, PixelFormats.Pbgra32);
+            var visual = new DrawingVisual();
+
+            using (var r = visual.RenderOpen())
+            {
+                foreach (var ocrResult in results.Results)
+                {
+                    r.DrawImage(bmp, new Rect(ocrResult.X, ocrResult.Y, ocrResult.Width, ocrResult.Height));
+                }
+            }
+
+            target.Render(visual);
+            return target;
+
+        }
         public static BitmapSource DrawTextItems(BitmapSource bmp, OcrResults results)
         {
 

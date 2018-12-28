@@ -22,22 +22,24 @@ namespace ScreenMagic
     {
         private IntPtr _windowToWatch = IntPtr.Zero;
         private System.Timers.Timer _timer;
+
+        IBitmapProvider _bitmapProvider;
+        IOcrResultProvider _ocrProvider;
         public MainWindow()
         {
             InitializeComponent();
+            _bitmapProvider = BitmapProviderFactory.GetBitmapProvider();
+            _ocrProvider = OcrProviderFactory.GetOcrResultsProvider();
+
             _timer = new System.Timers.Timer(10000);
             _timer.Elapsed += _timer_Elapsed;
         }
 
         private void Execute_Click(object sender, RoutedEventArgs e)
-        {
-            
-            _windowToWatch = Utils.Activate();
-            if (_windowToWatch != IntPtr.Zero)
-            {
-                System.Threading.Thread.Sleep(2000);
-                _timer.Start();
-            }
+        {    
+            Utils.Activate();
+            System.Threading.Thread.Sleep(2000);
+            _timer.Start();
         }
 
         private void _timer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
@@ -48,14 +50,13 @@ namespace ScreenMagic
 
         private async void Update( )
         {
-            var screen = Utils.CaptureScreenshot(_windowToWatch);
-
+            var screen = _bitmapProvider.CaptureScreenshot();
             var imageSource = Utils.ImageSourceForBitmap(screen);
             byte[] jpegEncodedImage = Utils.SerializeBitmapToJpeg(screen);
             
             var results = await OcrUtils.GetOcrResults(jpegEncodedImage);
 
-            MainImage.Source = RenderUtils.DrawTextItems(imageSource, results);
+            MainImage.Source = RenderUtils.DrawOriginalBmps(imageSource, results);
         }
 
         private void OCR_Click(object sender, RoutedEventArgs e)
