@@ -18,6 +18,11 @@ namespace ScreenMagic
         public int Width { get; set; }
         [DataMember]
         public int Height { get; set; }
+
+        public bool ContainsCoordinate(int x, int y)
+        {
+            return ((x >= X && x <= (X + Width)) && ((y >= Y) && y <= (Y + Height)));
+        }
     }
 
     [DataContract]
@@ -41,6 +46,17 @@ namespace ScreenMagic
             var x = from item in Results where item.ContainsText(searchText) select item;
             return x;
         }
+
+        public OcrResult GetOcrResultFromCoordinate(int x, int y)
+        {
+            foreach (var result in Results)
+            {
+                if (result.ContainsCoordinate(x, y)) return result;
+            }
+            return null;
+        }
+
+
     }
     [DataContract]
     public class OcrResult
@@ -59,6 +75,11 @@ namespace ScreenMagic
         public bool ContainsText(string searchText)
         {
             return Text.ToLower().Contains(searchText.ToLower());
+        }
+
+        public bool ContainsCoordinate(int x, int y)
+        {
+            return ((x >= X && x <= (X + Width)) && ((y >= Y) && y <= (Y + Height)));
         }
     }
 

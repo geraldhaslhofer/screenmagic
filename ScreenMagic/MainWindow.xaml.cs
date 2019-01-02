@@ -22,6 +22,10 @@ namespace ScreenMagic
     {
         private IntPtr _windowToWatch = IntPtr.Zero;
         private System.Timers.Timer _timer;
+        private double _imageWidth;
+        private double _imageHeight;
+
+        OcrResults _lastOcrResults = null;
 
         IBitmapProvider _bitmapProvider;
         IOcrResultProvider _ocrProvider;
@@ -35,6 +39,31 @@ namespace ScreenMagic
             _timer.Elapsed += _timer_Elapsed;
             this.SizeChanged += MainWindow_SizeChanged;
             this.StateChanged += MainWindow_StateChanged;
+            MainImage.MouseDown += MainImage_MouseDown;
+            ScaleSelection.Items.Add(100);
+            ScaleSelection.Items.Add(50);
+            ScaleSelection.Items.Add(25);
+            ScaleSelection.Items.Add(10);
+            ScaleSelection.SelectedIndex = 0;
+        }
+
+        private void MainImage_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            var clickPos = e.GetPosition(MainImage);
+
+            //Figure out position
+            ImageSource imageSource = MainImage.Source;
+            RenderTargetBitmap bitmapImage = (RenderTargetBitmap)imageSource;
+            var pixelMousePositionX = e.GetPosition(MainImage).X * bitmapImage.PixelWidth / MainImage.Width;
+            var pixelMousePositionY = e.GetPosition(MainImage).Y * bitmapImage.PixelHeight / MainImage.Height;
+
+            System.Diagnostics.Debug.WriteLine(clickPos.ToString() + " " + pixelMousePositionX.ToString() + " "+ pixelMousePositionY.ToString());
+            var textResults = _lastOcrResults.GetOcrResultFromCoordinate((int)clickPos.X, (int)clickPos.Y);
+
+            if (textResults != null)
+            {
+                System.Diagnostics.Debug.WriteLine(textResults.Text);
+            }
         }
 
         private void MainWindow_StateChanged(object sender, EventArgs e)
@@ -67,11 +96,22 @@ namespace ScreenMagic
 
         private async void Update()
         {
+            //double scaleFactor = (double)(int.Parse(ScaleSelection.SelectedItem.ToString())) / 100.0;
+
+            double scaleFactor = 0.5;
+
+
             var screen = _bitmapProvider.CaptureScreenshot();
-            var imageSource = Utils.ImageSourceForBitmap(screen);
+            
+            var imageSourceOrig = Utils.ImageSourceForBitmap(screen);
+            var imageSource = RenderUtils.ScaleImage(imageSourceOrig, scaleFactor);
+            
+            //Scale
+
             byte[] jpegEncodedImage = Utils.SerializeBitmapToJpeg(screen);
             
-            var results = await OcrUtils.GetOcrResults(jpegEncodedImage);
+            var results = await OcrUtils.GetOcrResults(jpegEncodedImage, scaleFactor);
+            _lastOcrResults = results;
 
             MainImage.Source = RenderUtils.DrawOriginalBmps(imageSource, results);
         }

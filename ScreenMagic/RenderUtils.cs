@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows;
-using System.Drawing;
+//using System.Drawing;
 using System.IO;
 
 namespace ScreenMagic
@@ -22,12 +22,24 @@ namespace ScreenMagic
 
             return bitmap;
         }
-        public static void CopyRegionIntoImage(Bitmap srcBitmap, Rectangle srcRegion, ref Bitmap destBitmap, Rectangle destRegion)
+        public static void CopyRegionIntoImage(System.Drawing.Bitmap srcBitmap, System.Drawing.Rectangle srcRegion, ref System.Drawing.Bitmap destBitmap, System.Drawing.Rectangle destRegion)
         {
-            using (Graphics grD = Graphics.FromImage(destBitmap))
+            using (System.Drawing.Graphics grD = System.Drawing.Graphics.FromImage(destBitmap))
             {
-                grD.DrawImage(srcBitmap, destRegion, srcRegion, GraphicsUnit.Pixel);
+                grD.DrawImage(srcBitmap, destRegion, srcRegion, System.Drawing.GraphicsUnit.Pixel);
             }
+        }
+        public static BitmapSource ScaleImage(BitmapSource bmp, double scale)
+        {
+            var target = new RenderTargetBitmap((int)((double)bmp.PixelWidth * scale), (int)((double)bmp.PixelHeight * scale), bmp.DpiX, bmp.DpiY, PixelFormats.Pbgra32);
+            var visual = new DrawingVisual();
+            using (var r = visual.RenderOpen())
+            {
+                r.DrawImage(bmp, new Rect(0, 0, (double)bmp.Width * scale,(double) bmp.Height * scale));
+            }
+            target.Render(visual);
+            return target;
+
         }
         public static BitmapSource DrawOriginalBmps(BitmapSource bmp, OcrResults results)
         {
@@ -39,16 +51,35 @@ namespace ScreenMagic
             using (var r = visual.RenderOpen())
             {
                 //render background
-                BitmapSource bg = GetImageFromPath(Path.Combine(Utils.GetAssemblyPath(), "Assets\\background.jpg"));
-                r.DrawImage(bg, new Rect(0, 0, bmp.Width, bmp.Height));
-                
+                //BitmapSource bg = GetImageFromPath(Path.Combine(Utils.GetAssemblyPath(), "Assets\\background.jpg"));
+                //r.DrawImage(bg, new Rect(0, 0, bmp.Width, bmp.Height));
+                r.DrawImage(bmp, new Rect(0, 0, bmp.Width, bmp.Height));
+
+                //Render bounding boxes
+                foreach (var box in results.BoundingBoxes)
+                {
+                    r.DrawRectangle(new SolidColorBrush(Color.FromRgb(255,255,255)), new Pen(Brushes.LightGray, 4.0), new Rect(box.X, box.Y, box.Width, box.Height));
+
+                }
 
                 foreach (var ocrResult in results.Results)
                 {
-                    Int32Rect rec = new Int32Rect(ocrResult.X, ocrResult.Y, ocrResult.Width, ocrResult.Height);
-                    CroppedBitmap b = new CroppedBitmap(bmp, rec);
+                    if (true)
+                    {
 
-                    r.DrawImage(b, new Rect(ocrResult.X, ocrResult.Y, ocrResult.Width, ocrResult.Height));
+                        Int32Rect rec = new Int32Rect(ocrResult.X, ocrResult.Y, ocrResult.Width , ocrResult.Height );
+                        CroppedBitmap b = new CroppedBitmap(bmp, rec);
+
+                        r.DrawImage(b, new Rect(ocrResult.X, ocrResult.Y, ocrResult.Width, ocrResult.Height));
+                    }
+
+                    else
+                    {
+                        Typeface typeface = new Typeface(new FontFamily("Arial"), FontStyles.Normal, FontWeights.Normal, FontStretches.Normal);
+                        FormattedText txt = new FormattedText(ocrResult.Text, System.Globalization.CultureInfo.CurrentCulture, FlowDirection.LeftToRight, typeface, 8, Brushes.Black);
+                        r.DrawText(txt, new Point(ocrResult.X, ocrResult.Y));
+
+                    }
                 }
             }
 

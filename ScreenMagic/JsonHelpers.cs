@@ -13,7 +13,14 @@ namespace ScreenMagic
 
     class JsonHelpers
     {
-        public static void GetBoundingBoxes(JToken token, List<BoundingBox> boxes)
+        private static int ScaleInt(int origValue, double scaleFactor)
+        {
+            int value = (int)((double)origValue * scaleFactor);
+            if (value == 0 && origValue != 0) return origValue;
+
+            return value;
+        }
+        public static void GetBoundingBoxes(JToken token, List<BoundingBox> boxes, double scaleFactor)
         {
             foreach (var child in token.Children())
             {
@@ -26,10 +33,10 @@ namespace ScreenMagic
                         string rem = p.Value.ToString();
                         var items = rem.Split(',');
                         BoundingBox aBox = new BoundingBox();
-                        aBox.X = int.Parse(items[0]);
-                        aBox.Y = int.Parse(items[1]);
-                        aBox.Width = int.Parse(items[2]);
-                        aBox.Height = int.Parse(items[3]);
+                        aBox.X = ScaleInt(int.Parse(items[0]), scaleFactor);
+                        aBox.Y = ScaleInt(int.Parse(items[1]), scaleFactor);
+                        aBox.Width = ScaleInt(int.Parse(items[2]), scaleFactor);
+                        aBox.Height = ScaleInt(int.Parse(items[3]), scaleFactor);
                         boxes.Add(aBox);
                     }
 
@@ -37,7 +44,7 @@ namespace ScreenMagic
 
                 }
 
-                GetBoundingBoxes(child, boxes);
+                GetBoundingBoxes(child, boxes, scaleFactor);
             }
         }
 
@@ -65,7 +72,7 @@ namespace ScreenMagic
             }
         }
 
-        public static void GetTextElements(JToken token, OcrResults results)
+        public static void GetTextElements(JToken token, OcrResults results, double scaleFactor)
         {
             foreach (var child in token.Children())
             {
@@ -78,7 +85,7 @@ namespace ScreenMagic
                     //System.Diagnostics.Debug.WriteLine("==>hit:  " + p.Name);
                     if (p.Name == "words")
                     {
-                        GetDetails(p, results);
+                        GetDetails(p, results, scaleFactor);
                         //Console.WriteLine(p.Value);
 
                     }
@@ -86,21 +93,21 @@ namespace ScreenMagic
                 };
                 //System.Diagnostics.Debug.WriteLine(child.Type.ToString() + ":" + child + "::" + child.ToString());
                 //System.Diagnostics.Debug.WriteLine("------------------------------");
-                GetTextElements(child, results);
+                GetTextElements(child, results, scaleFactor);
             }
         }
 
-        private static void SetBoundingBox(OcrResult res, string box)
+        private static void SetBoundingBox(OcrResult res, string box, double scaleFactor)
         {
             string rem = box.Replace('{', ' ');
             rem = rem.Replace('}', ' ');
             var items = rem.Split(',');
-            res.X = int.Parse(items[0]);
-            res.Y = int.Parse(items[1]);
-            res.Width = int.Parse(items[2]);
-            res.Height = int.Parse(items[3]);
+            res.X = ScaleInt(int.Parse(items[0]), scaleFactor);
+            res.Y = ScaleInt(int.Parse(items[1]), scaleFactor);
+            res.Width = ScaleInt(int.Parse(items[2]), scaleFactor);
+            res.Height = ScaleInt(int.Parse(items[3]), scaleFactor);
         }
-        private static void GetDetails(JToken token, OcrResults results)
+        private static void GetDetails(JToken token, OcrResults results, double scaleFactor)
         {
             foreach (var child in token.Children())
             {
@@ -113,7 +120,7 @@ namespace ScreenMagic
                     {
                         if (((JProperty)aDetail).Name == "boundingBox")
                         {
-                            SetBoundingBox(ocrResult, ((JProperty)aDetail).Value.ToString());
+                            SetBoundingBox(ocrResult, ((JProperty)aDetail).Value.ToString(), scaleFactor);
                         }
                         if (((JProperty)aDetail).Name == "text")
                         {

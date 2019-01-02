@@ -8,7 +8,7 @@ namespace ScreenMagic
 {
     class OcrUtils
     {
-        public async static Task<OcrResults> GetOcrResults(byte[] jpegEncoded)
+        public async static Task<OcrResults> GetOcrResults(byte[] jpegEncoded, double scaleFactor)
         {
             IOcrResultProvider anOCR = OcrProviderFactory.GetOcrResultsProvider();
 
@@ -16,8 +16,8 @@ namespace ScreenMagic
             OcrResults results = new OcrResults();
             results.Results = new List<OcrResult>();
             List<BoundingBox> boxes = new List<BoundingBox>();
-            JsonHelpers.GetBoundingBoxes(x, boxes);
-            JsonHelpers.GetTextElements(x, results);
+            JsonHelpers.GetBoundingBoxes(x, boxes, scaleFactor);
+            JsonHelpers.GetTextElements(x, results, scaleFactor);
             results.BoundingBoxes = boxes;
             return results;
         }
