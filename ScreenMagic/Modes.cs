@@ -11,7 +11,7 @@ namespace ScreenMagic
         public static IntPtr WindowToWatch
         { get; set; }
         public static bool IsTest()
-        {
+        { 
             return false;
         }
     }
