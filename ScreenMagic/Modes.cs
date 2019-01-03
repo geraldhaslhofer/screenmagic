@@ -12,7 +12,7 @@ namespace ScreenMagic
         { get; set; }
         public static bool IsTest()
         {
-            return true;
+            return false;
         }
     }
 }
