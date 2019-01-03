@@ -9,7 +9,7 @@ namespace ScreenMagic
 {
     [DataContract]
     public class BoundingBox
-    {
+    { 
         [DataMember]
         public int X { get; set; }
         [DataMember]
