@@ -81,7 +81,9 @@ namespace ScreenMagic
         }
 
         private void Execute_Click(object sender, RoutedEventArgs e)
-        {    
+        {
+            SelectApp s = new SelectApp();
+            s.ShowDialog();
             Utils.Activate();
             System.Threading.Thread.Sleep(2000);
             Update();

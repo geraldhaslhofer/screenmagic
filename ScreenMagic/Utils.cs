@@ -34,7 +34,7 @@ namespace ScreenMagic
 
         public static void Activate()
         {
-            IntPtr handle = GetWindowHandleFromApp("outlook");
+            IntPtr handle = Modes.WindowToWatch;
             if (handle != IntPtr.Zero)
             {
                 SetForegroundWindow(handle);

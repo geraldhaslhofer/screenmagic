@@ -8,6 +8,8 @@ namespace ScreenMagic
 {
     class Modes
     {
+        public static IntPtr WindowToWatch
+        { get; set; }
         public static bool IsTest()
         {
             return true;

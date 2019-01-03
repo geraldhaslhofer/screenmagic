@@ -79,13 +79,21 @@
     <Compile Include="OcrProvider\TestStubOcrProvider.cs" />
     <Compile Include="OcrResults.cs" />
     <Compile Include="OcrUtils.cs" />
+    <Compile Include="ProcessHelper.cs" />
     <Compile Include="Rect.cs" />
     <Compile Include="RenderUtils.cs" />
+    <Compile Include="SelectApp.xaml.cs">
+      <DependentUpon>SelectApp.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Utils.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="SelectApp.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs">

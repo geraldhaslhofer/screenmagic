@@ -11,7 +11,7 @@ namespace ScreenMagic
 
         public static IBitmapProvider GetBitmapProvider()
         {
-            if (Modes.IsTest())
+            if (Modes.IsTest()) 
             {
                 return new TestStubScreenshotProvider();
             }
