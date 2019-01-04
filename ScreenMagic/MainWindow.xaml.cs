@@ -103,24 +103,28 @@ namespace ScreenMagic
 
         private void Execute_Click(object sender, RoutedEventArgs e)
         {
-            if (_isActive)
-            {
-                //stop 
-                _isActive = false;
-                _timer.Stop();
-                Execute.Content = "Start";
-            }
-            else
-            {
-                _isActive = true;
-                _timer.Start();
-                Execute.Content = "Stop";
+            //if (_isActive)
+            //{
+            //    //stop 
+            //    _isActive = false;
+            //    _timer.Stop();
+            //    Execute.Content = "Start";
+            //}
+            //else
+            //{
+            //    _isActive = true;
+            //    _timer.Start();
+            //    Execute.Content = "Stop";
 
-            }
+            //}
 
             //Utils.Activate();
             //System.Threading.Thread.Sleep(500);
             Update();
+
+            //... and reposition
+            RECT r = Utils.GetWindowRect(Modes.WindowToWatch);
+            Utils.ChangePos(Utils.GetMainWindowsHandle(), r);
             //_timer.Start();
         }
 
@@ -154,6 +158,14 @@ namespace ScreenMagic
         private void OCR_Click(object sender, RoutedEventArgs e)
         {
             //var result = OcrUtils.CatpureImage(@"C:\Users\gerhas\Desktop\tes.jpg");
+        }
+
+        private void Test_Click(object sender, RoutedEventArgs e)
+        {
+            RECT r = Utils.GetWindowRect(Modes.WindowToWatch);
+
+
+            Utils.ChangePos(Utils.GetMainWindowsHandle(), r);
         }
     }
 }

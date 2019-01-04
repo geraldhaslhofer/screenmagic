@@ -5,13 +5,14 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ScreenMagic"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="ScreenMagic" Height="450" Width="800">
     <Grid>
         <StackPanel x:Name="Divider" Orientation="Vertical" Margin="0,0,0,10.5">
             <StackPanel x:Name="Divider2" Orientation="Horizontal">
                 <ComboBox x:Name="AppSelection" Width="117" Height="18" Margin="8,10,0,0" FontSize="8"/>
                 <ComboBox x:Name="ScaleSelection" Width="117" Height="18" Margin="8,10,0,0" FontSize="8"/>
                 <Button x:Name="Execute" Content="Start" HorizontalAlignment="Left" Margin="8,10,0,0" VerticalAlignment="Top" Width="75" Click="Execute_Click"/>
+                <Button x:Name="Test" Content="Test" HorizontalAlignment="Left" Margin="8,10,0,0" VerticalAlignment="Top" Width="75" Click="Test_Click"/>
 
             </StackPanel>
             <StackPanel x:Name="Divider3" Orientation="Vertical">

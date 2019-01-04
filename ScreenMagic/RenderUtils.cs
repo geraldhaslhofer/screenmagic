@@ -59,7 +59,7 @@ namespace ScreenMagic
                 foreach (var box in results.BoundingBoxes)
                 {
                     //r.DrawRectangle(new SolidColorBrush(Color.FromRgb(255,255,255)), new Pen(Brushes.LightGray, 4.0), new Rect(box.X, box.Y, box.Width, box.Height));
-                    r.DrawRectangle(null, new Pen(Brushes.DarkBlue, 2.0), new Rect(box.X, box.Y, box.Width, box.Height));
+                    r.DrawRectangle(null, new Pen(Brushes.LightBlue, 1.0), new Rect(box.X, box.Y, box.Width, box.Height));
 
                 }
 

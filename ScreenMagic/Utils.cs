@@ -14,6 +14,24 @@ namespace ScreenMagic
 {
     class Utils
     {
+        static readonly IntPtr HWND_TOPMOST = new IntPtr(-1);
+        static readonly IntPtr HWND_NOTOPMOST = new IntPtr(-2);
+        static readonly IntPtr HWND_TOP = new IntPtr(0);
+        static readonly IntPtr HWND_BOTTOM = new IntPtr(1);
+
+        public static IntPtr GetMainWindowsHandle()
+        {
+            Process cur = Process.GetCurrentProcess();
+            cur.Refresh();
+            return cur.MainWindowHandle;
+        }
+
+        public static void ChangePos(IntPtr handle, RECT r)
+        {
+           
+            SetWindowPos(handle, HWND_TOP, r.Left, r.Top, r.Right - r.Left, r.Bottom - r.Top, 0);
+        }
+
         public static byte[] SerializeBitmapToJpeg(Bitmap bmp)
         {
             MemoryStream ms = new MemoryStream();
@@ -40,6 +58,13 @@ namespace ScreenMagic
             {
                 SetForegroundWindow(handle);
             }
+        }
+
+        public static RECT GetWindowRect(IntPtr windowHandle)
+        {
+            RECT rect = new RECT();
+            IntPtr error = GetWindowRect(windowHandle, ref rect);
+            return rect;
         }
         public static Bitmap CaptureScreenshot(IntPtr windowHandle)
         {
@@ -103,6 +128,9 @@ namespace ScreenMagic
 
         [DllImport("user32.dll")]
         public static extern IntPtr GetWindowRect(IntPtr hWnd, ref RECT rect);
+
+        [DllImport("user32.dll")]
+        static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int X, int Y, int cx, int cy, uint uFlags);
 
     }
 }
