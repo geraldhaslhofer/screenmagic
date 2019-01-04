@@ -45,8 +45,29 @@ namespace ScreenMagic
             ScaleSelection.Items.Add(25);
             ScaleSelection.Items.Add(10);
             ScaleSelection.SelectedIndex = 0;
+
+            PopulateListOfApps();
+            AppSelection.SelectionChanged += AppSelection_SelectionChanged;
         }
 
+        private void AppSelection_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            DesktopWindow w = (DesktopWindow)AppSelection.SelectedItem;
+            Modes.WindowToWatch = w.Handle;
+        }
+
+        private void PopulateListOfApps()
+        {
+            AppSelection.Items.Clear();
+
+            var windows = User32Helper.GetDesktopWindows();
+            var visible = from x in windows where x.IsVisible && x.Title.Length > 2 orderby x.Title select x;
+            foreach (var avisible in visible)
+            {
+                AppSelection.Items.Add(avisible);
+            }
+
+        }
         private void MainImage_MouseDown(object sender, MouseButtonEventArgs e)
         {
             var clickPos = e.GetPosition(MainImage);
@@ -62,6 +83,7 @@ namespace ScreenMagic
 
             if (textResults != null)
             {
+                Utils.SetClipboardText(textResults.Text);
                 System.Diagnostics.Debug.WriteLine(textResults.Text);
             }
         }
@@ -82,10 +104,8 @@ namespace ScreenMagic
 
         private void Execute_Click(object sender, RoutedEventArgs e)
         {
-            SelectApp s = new SelectApp();
-            s.ShowDialog();
             Utils.Activate();
-            System.Threading.Thread.Sleep(2000);
+            System.Threading.Thread.Sleep(500);
             Update();
             //_timer.Start();
         }
@@ -98,10 +118,9 @@ namespace ScreenMagic
 
         private async void Update()
         {
-            //double scaleFactor = (double)(int.Parse(ScaleSelection.SelectedItem.ToString())) / 100.0;
-
-            double scaleFactor = 0.5;
-
+            //Figure out what to update, and at what resolution
+            double scaleFactor = (double)(int.Parse(ScaleSelection.SelectedItem.ToString())) / 100.0;
+            
 
             var screen = _bitmapProvider.CaptureScreenshot();
             

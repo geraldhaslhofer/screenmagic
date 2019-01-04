@@ -10,8 +10,8 @@
         <StackPanel x:Name="Divider" Orientation="Vertical" Margin="0,0,0,10.5">
             <StackPanel x:Name="Divider2" Orientation="Horizontal">
             <Button x:Name="Execute" Content="Update" HorizontalAlignment="Left" Margin="8,10,0,0" VerticalAlignment="Top" Width="75" Click="Execute_Click"/>
+                <ComboBox x:Name="AppSelection" Width="117" Height="18" Margin="8,10,0,0" FontSize="8"/>
                 <ComboBox x:Name="ScaleSelection" Width="117" Height="18" Margin="8,10,0,0" FontSize="8"/>
-
             </StackPanel>
             <StackPanel x:Name="Divider3" Orientation="Vertical">
                 <Image x:Name="MainImage" Height="350" Margin="10,10,10,10" HorizontalAlignment="Left" VerticalAlignment="Top" Stretch="None"/>

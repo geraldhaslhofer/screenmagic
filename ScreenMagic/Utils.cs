@@ -8,6 +8,7 @@ using System.Windows.Interop;
 using System.Windows;
 using System.Windows.Media.Imaging;
 using System.IO;
+using System.Threading;
 
 namespace ScreenMagic
 {
@@ -75,6 +76,14 @@ namespace ScreenMagic
             string basePath = System.IO.Path.GetDirectoryName(execAssembly);
             return basePath;
 
+        }
+
+        public static void SetClipboardText(string text)
+        {
+            Thread thread = new Thread(() => Clipboard.SetText(text));
+            thread.SetApartmentState(ApartmentState.STA); //Set the thread to STA
+            thread.Start();
+            thread.Join();
         }
 
         [DllImport("user32.dll")]
