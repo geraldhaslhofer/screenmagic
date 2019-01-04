@@ -22,9 +22,8 @@ namespace ScreenMagic
     {
         private IntPtr _windowToWatch = IntPtr.Zero;
         private System.Timers.Timer _timer;
-        private double _imageWidth;
-        private double _imageHeight;
-
+        private bool _isActive = false;
+       
         OcrResults _lastOcrResults = null;
 
         IBitmapProvider _bitmapProvider;
@@ -104,8 +103,23 @@ namespace ScreenMagic
 
         private void Execute_Click(object sender, RoutedEventArgs e)
         {
-            Utils.Activate();
-            System.Threading.Thread.Sleep(500);
+            if (_isActive)
+            {
+                //stop 
+                _isActive = false;
+                _timer.Stop();
+                Execute.Content = "Start";
+            }
+            else
+            {
+                _isActive = true;
+                _timer.Start();
+                Execute.Content = "Stop";
+
+            }
+
+            //Utils.Activate();
+            //System.Threading.Thread.Sleep(500);
             Update();
             //_timer.Start();
         }

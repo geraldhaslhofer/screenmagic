@@ -58,29 +58,30 @@ namespace ScreenMagic
                 //Render bounding boxes
                 foreach (var box in results.BoundingBoxes)
                 {
-                    r.DrawRectangle(new SolidColorBrush(Color.FromRgb(255,255,255)), new Pen(Brushes.LightGray, 4.0), new Rect(box.X, box.Y, box.Width, box.Height));
+                    //r.DrawRectangle(new SolidColorBrush(Color.FromRgb(255,255,255)), new Pen(Brushes.LightGray, 4.0), new Rect(box.X, box.Y, box.Width, box.Height));
+                    r.DrawRectangle(null, new Pen(Brushes.DarkBlue, 2.0), new Rect(box.X, box.Y, box.Width, box.Height));
 
                 }
 
-                foreach (var ocrResult in results.Results)
-                {
-                    if (true)
-                    {
+                //foreach (var ocrResult in results.Results)
+                //{
+                //    if (true)
+                //    {
 
-                        Int32Rect rec = new Int32Rect(ocrResult.X, ocrResult.Y, ocrResult.Width , ocrResult.Height );
-                        CroppedBitmap b = new CroppedBitmap(bmp, rec);
+                //        Int32Rect rec = new Int32Rect(ocrResult.X, ocrResult.Y, ocrResult.Width , ocrResult.Height );
+                //        CroppedBitmap b = new CroppedBitmap(bmp, rec);
 
-                        r.DrawImage(b, new Rect(ocrResult.X, ocrResult.Y, ocrResult.Width, ocrResult.Height));
-                    }
+                //        r.DrawImage(b, new Rect(ocrResult.X, ocrResult.Y, ocrResult.Width, ocrResult.Height));
+                //    }
 
-                    else
-                    {
-                        Typeface typeface = new Typeface(new FontFamily("Arial"), FontStyles.Normal, FontWeights.Normal, FontStretches.Normal);
-                        FormattedText txt = new FormattedText(ocrResult.Text, System.Globalization.CultureInfo.CurrentCulture, FlowDirection.LeftToRight, typeface, 8, Brushes.Black);
-                        r.DrawText(txt, new Point(ocrResult.X, ocrResult.Y));
+                //    else
+                //    {
+                //        Typeface typeface = new Typeface(new FontFamily("Arial"), FontStyles.Normal, FontWeights.Normal, FontStretches.Normal);
+                //        FormattedText txt = new FormattedText(ocrResult.Text, System.Globalization.CultureInfo.CurrentCulture, FlowDirection.LeftToRight, typeface, 8, Brushes.Black);
+                //        r.DrawText(txt, new Point(ocrResult.X, ocrResult.Y));
 
-                    }
-                }
+                //    }
+                //}
             }
 
             target.Render(visual);
