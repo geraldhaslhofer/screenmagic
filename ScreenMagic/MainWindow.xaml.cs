@@ -47,6 +47,19 @@ namespace ScreenMagic
 
             PopulateListOfApps();
             AppSelection.SelectionChanged += AppSelection_SelectionChanged;
+            this.Closing += MainWindow_Closing;
+        }
+
+        private void SetSmallState()
+        {
+            this.Width = 449;
+            this.Height = 83;
+        }
+
+
+        private void MainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            e.Cancel = true;
         }
 
         private void AppSelection_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -162,10 +175,11 @@ namespace ScreenMagic
 
         private void Test_Click(object sender, RoutedEventArgs e)
         {
-            RECT r = Utils.GetWindowRect(Modes.WindowToWatch);
+            SetSmallState();
 
-
-            Utils.ChangePos(Utils.GetMainWindowsHandle(), r);
+            //RECT r = Utils.GetWindowRect(Modes.WindowToWatch);
+            
+            //Utils.ChangePos(Utils.GetMainWindowsHandle(), r);
         }
     }
 }
