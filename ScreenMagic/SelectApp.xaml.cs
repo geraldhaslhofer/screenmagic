@@ -41,6 +41,7 @@ namespace ScreenMagic
         {
             DesktopWindow w = (DesktopWindow)AppsList.SelectedItem;
             Modes.WindowToWatch = w.Handle;
+            this.Close();
         }
     }
 }

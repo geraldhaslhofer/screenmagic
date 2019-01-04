@@ -1,3 +1,6 @@
 ﻿Adjust bitmap size depending on app size (auto scale)
 Allow any app to be tracked
 Ensure update sequence can be managed (low bandwidth)
+
+
+https://stackoverflow.com/questions/24261902/render-translucent-transparent-overlay
