@@ -11,7 +11,7 @@ namespace ScreenMagic
     {
        
         public AppScreenshotProvider()
-        {
+        { 
          }
         Bitmap IBitmapProvider.CaptureScreenshot()
         {
