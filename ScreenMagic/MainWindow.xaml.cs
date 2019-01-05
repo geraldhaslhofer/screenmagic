@@ -19,7 +19,8 @@ namespace ScreenMagic
     {
         Launch = 0,
         WithScreenshot = 1,
-        Companion = 2
+        Companion = 2,
+        Minimized = 3
     }
 
     /// <summary>
@@ -48,6 +49,7 @@ namespace ScreenMagic
             this.StateChanged += MainWindow_StateChanged;
             MainImage.MouseDown += MainImage_MouseDown;
             ScaleSelection.Items.Add(100);
+            ScaleSelection.Items.Add(66);
             ScaleSelection.Items.Add(50);
             ScaleSelection.Items.Add(25);
             ScaleSelection.Items.Add(10);
@@ -55,13 +57,27 @@ namespace ScreenMagic
 
             PopulateListOfApps();
             AppSelection.SelectionChanged += AppSelection_SelectionChanged;
-            this.Closing += MainWindow_Closing;
+            //this.Closing += MainWindow_Closing;
+            
             SetWindowState(AppVisualState.Launch);
         }
 
         private void SetWindowState(AppVisualState state)
         {
             switch (state) {
+                case AppVisualState.Minimized:
+                    {
+                        this.WindowState = WindowState.Minimized;
+                        SetSmallState();
+                        AppSelection.Visibility = Visibility.Visible;
+                        ScaleSelection.Visibility = Visibility.Visible;
+                        Execute.Visibility = Visibility.Visible;
+                        MainImage.Visibility = Visibility.Collapsed;
+                        Exit.Visibility = Visibility.Collapsed;
+                        CopyText.Visibility = Visibility.Collapsed;
+
+                    }
+                    break;
                 case AppVisualState.Launch:
                     {
                         SetSmallState();
@@ -117,7 +133,7 @@ namespace ScreenMagic
         private void MainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             e.Cancel = true;
-            SetWindowState(AppVisualState.Companion);
+            SetWindowState(AppVisualState.Minimized);
         }
 
         private void AppSelection_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -187,7 +203,10 @@ namespace ScreenMagic
 
         private void MainWindow_StateChanged(object sender, EventArgs e)
         {
-            UpdateLayoutElements();
+            if (this.WindowState == WindowState.Minimized)
+            {
+                SetWindowState(AppVisualState.Minimized);
+            }
         }
         private void UpdateLayoutElements()
         {
@@ -275,7 +294,7 @@ namespace ScreenMagic
 
         private void Exit_Click(object sender, RoutedEventArgs e)
         {
-            SetWindowState(AppVisualState.Companion);
+            SetWindowState(AppVisualState.Minimized);
 
         }
     }
