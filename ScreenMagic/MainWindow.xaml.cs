@@ -15,6 +15,13 @@ using System.Windows.Shapes;
 
 namespace ScreenMagic
 {
+    enum AppVisualState
+    {
+        Launch = 0,
+        WithScreenshot = 1,
+        Companion = 2
+    }
+
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
@@ -26,6 +33,7 @@ namespace ScreenMagic
        
         OcrResults _lastOcrResults = null;
 
+        
         IBitmapProvider _bitmapProvider;
         IOcrResultProvider _ocrProvider;
         public MainWindow()
@@ -48,6 +56,51 @@ namespace ScreenMagic
             PopulateListOfApps();
             AppSelection.SelectionChanged += AppSelection_SelectionChanged;
             this.Closing += MainWindow_Closing;
+            SetWindowState(AppVisualState.Launch);
+        }
+
+        private void SetWindowState(AppVisualState state)
+        {
+            switch (state) {
+                case AppVisualState.Launch:
+                    {
+                        SetSmallState();
+                        AppSelection.Visibility = Visibility.Visible;
+                        ScaleSelection.Visibility = Visibility.Visible;
+                        Execute.Visibility = Visibility.Visible;
+                        MainImage.Visibility = Visibility.Collapsed;
+                        Exit.Visibility = Visibility.Collapsed;
+                    } break;
+                case AppVisualState.WithScreenshot:
+                    {
+                        //... move over app to watch
+                        RECT r = Utils.GetWindowRect(Modes.WindowToWatch);
+                        Utils.ChangePos(Utils.GetMainWindowsHandle(), r);
+
+                        AppSelection.Visibility = Visibility.Collapsed;
+                        ScaleSelection.Visibility = Visibility.Collapsed;
+                        Execute.Visibility = Visibility.Collapsed;
+                        MainImage.Visibility = Visibility.Visible;
+                        Exit.Visibility = Visibility.Visible;
+
+                    } break;
+                case AppVisualState.Companion:
+                    {
+                        SetSmallState();
+                        AppSelection.Visibility = Visibility.Visible;
+                        ScaleSelection.Visibility = Visibility.Visible;
+                        Execute.Visibility = Visibility.Visible;
+                        MainImage.Visibility = Visibility.Collapsed;
+                        Exit.Visibility = Visibility.Collapsed;
+
+                        if (Modes.WindowToWatch != IntPtr.Zero)
+                        {
+                            //Move out of the way     
+                            RECT toWatch = Utils.GetWindowRect(Modes.WindowToWatch);
+                            this.Left += (toWatch.Right - toWatch.Left);
+                        }
+                    } break;
+            }
         }
 
         private void SetSmallState()
@@ -60,6 +113,7 @@ namespace ScreenMagic
         private void MainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             e.Cancel = true;
+            SetWindowState(AppVisualState.Companion);
         }
 
         private void AppSelection_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -135,9 +189,11 @@ namespace ScreenMagic
             //System.Threading.Thread.Sleep(500);
             Update();
 
+            SetWindowState(AppVisualState.WithScreenshot);
+
             //... and reposition
-            RECT r = Utils.GetWindowRect(Modes.WindowToWatch);
-            Utils.ChangePos(Utils.GetMainWindowsHandle(), r);
+            //RECT r = Utils.GetWindowRect(Modes.WindowToWatch);
+            //Utils.ChangePos(Utils.GetMainWindowsHandle(), r);
             //_timer.Start();
         }
 
@@ -149,23 +205,27 @@ namespace ScreenMagic
 
         private async void Update()
         {
-            //Figure out what to update, and at what resolution
-            double scaleFactor = (double)(int.Parse(ScaleSelection.SelectedItem.ToString())) / 100.0;
-            
+            if (Modes.WindowToWatch != IntPtr.Zero)
+            {
 
-            var screen = _bitmapProvider.CaptureScreenshot();
-            
-            var imageSourceOrig = Utils.ImageSourceForBitmap(screen);
-            var imageSource = RenderUtils.ScaleImage(imageSourceOrig, scaleFactor);
-            
-            //Scale
+                //Figure out what to update, and at what resolution
+                double scaleFactor = (double)(int.Parse(ScaleSelection.SelectedItem.ToString())) / 100.0;
 
-            byte[] jpegEncodedImage = Utils.SerializeBitmapToJpeg(screen);
-            
-            var results = await OcrUtils.GetOcrResults(jpegEncodedImage, scaleFactor);
-            _lastOcrResults = results;
 
-            MainImage.Source = RenderUtils.DrawOriginalBmps(imageSource, results);
+                var screen = _bitmapProvider.CaptureScreenshot();
+
+                var imageSourceOrig = Utils.ImageSourceForBitmap(screen);
+                var imageSource = RenderUtils.ScaleImage(imageSourceOrig, scaleFactor);
+
+                //Scale
+
+                byte[] jpegEncodedImage = Utils.SerializeBitmapToJpeg(screen);
+
+                var results = await OcrUtils.GetOcrResults(jpegEncodedImage, scaleFactor);
+                _lastOcrResults = results;
+
+                MainImage.Source = RenderUtils.DrawOriginalBmps(imageSource, results);
+            }
         }
 
         private void OCR_Click(object sender, RoutedEventArgs e)
@@ -175,11 +235,17 @@ namespace ScreenMagic
 
         private void Test_Click(object sender, RoutedEventArgs e)
         {
-            SetSmallState();
+            
 
             //RECT r = Utils.GetWindowRect(Modes.WindowToWatch);
             
             //Utils.ChangePos(Utils.GetMainWindowsHandle(), r);
+        }
+
+        private void Exit_Click(object sender, RoutedEventArgs e)
+        {
+            SetWindowState(AppVisualState.Companion);
+
         }
     }
 }
