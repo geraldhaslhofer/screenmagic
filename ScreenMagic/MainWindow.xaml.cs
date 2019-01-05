@@ -70,11 +70,13 @@ namespace ScreenMagic
                         Execute.Visibility = Visibility.Visible;
                         MainImage.Visibility = Visibility.Collapsed;
                         Exit.Visibility = Visibility.Collapsed;
+                        CopyText.Visibility = Visibility.Collapsed;
                     } break;
                 case AppVisualState.WithScreenshot:
                     {
                         //... move over app to watch
                         RECT r = Utils.GetWindowRect(Modes.WindowToWatch);
+                        r.Bottom += 90; //Accommodate buttons etc.
                         Utils.ChangePos(Utils.GetMainWindowsHandle(), r);
 
                         AppSelection.Visibility = Visibility.Collapsed;
@@ -82,6 +84,7 @@ namespace ScreenMagic
                         Execute.Visibility = Visibility.Collapsed;
                         MainImage.Visibility = Visibility.Visible;
                         Exit.Visibility = Visibility.Visible;
+                        CopyText.Visibility = Visibility.Visible;
 
                     } break;
                 case AppVisualState.Companion:
@@ -92,6 +95,7 @@ namespace ScreenMagic
                         Execute.Visibility = Visibility.Visible;
                         MainImage.Visibility = Visibility.Collapsed;
                         Exit.Visibility = Visibility.Collapsed;
+                        CopyText.Visibility = Visibility.Collapsed;
 
                         if (Modes.WindowToWatch != IntPtr.Zero)
                         {
@@ -145,13 +149,40 @@ namespace ScreenMagic
             var pixelMousePositionY = e.GetPosition(MainImage).Y * bitmapImage.PixelHeight / MainImage.Height;
 
             System.Diagnostics.Debug.WriteLine(clickPos.ToString() + " " + pixelMousePositionX.ToString() + " "+ pixelMousePositionY.ToString());
+
+            
             var textResults = _lastOcrResults.GetOcrResultFromCoordinate((int)clickPos.X, (int)clickPos.Y);
 
-            if (textResults != null)
+            string textToCopy = string.Empty;
+
+            if (textResults == null)
             {
-                Utils.SetClipboardText(textResults.Text);
-                System.Diagnostics.Debug.WriteLine(textResults.Text);
+                // try outer bounding box
+
+                var smallestBox  = _lastOcrResults.GetSmallestBoundingBox((int)clickPos.X, (int)clickPos.Y);
+                if (smallestBox != null)
+                {
+                    var allOcrResults = _lastOcrResults.GetOcrResultFromBoundingbox(smallestBox);
+                    if (allOcrResults != null && allOcrResults.Count > 0)
+                    {
+                        StringBuilder b = new StringBuilder();
+                        foreach (var aRes in allOcrResults)
+                        {
+                            b.Append(aRes.Text);
+                            b.Append(" ");
+                        }
+                        textToCopy = b.ToString();
+                    }
+                }
+
             }
+            else { 
+                textToCopy = textResults.Text;             
+            }
+
+            CopyText.Content = textToCopy;
+            Utils.SetClipboardText(textToCopy);
+            System.Diagnostics.Debug.WriteLine(textToCopy);
         }
 
         private void MainWindow_StateChanged(object sender, EventArgs e)
@@ -160,8 +191,8 @@ namespace ScreenMagic
         }
         private void UpdateLayoutElements()
         {
-            MainImage.Height = this.Height - 20;
-            MainImage.Width = this.Width - 20;
+            //MainImage.Height = this.Height - 20;
+            //MainImage.Width = this.Width - 20;
         }
         private void MainWindow_SizeChanged(object sender, SizeChangedEventArgs e)
         {

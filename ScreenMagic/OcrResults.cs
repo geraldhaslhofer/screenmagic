@@ -47,6 +47,42 @@ namespace ScreenMagic
             return x;
         }
 
+        
+
+        public BoundingBox GetSmallestBoundingBox(int x, int y)
+        {
+
+
+            int smallestArea = int.MaxValue;
+            BoundingBox res = null;
+
+            foreach (var result in BoundingBoxes)
+            {
+                if (result.ContainsCoordinate(x, y))
+                {
+                    int area = result.Height * result.Width;
+                    //smallest?
+                    if (area < smallestArea)
+                    {
+                        smallestArea = area;
+                        res = result;
+                    }
+                }
+            }
+            return res;
+        }
+
+        public List<OcrResult> GetOcrResultFromBoundingbox(BoundingBox b)
+        {
+            List<OcrResult> l = new List<OcrResult>();
+
+            foreach (var result in Results)
+            {
+                if (result.IsInBoundingBox(b)) l.Add(result);
+            }
+            return l;
+        }
+
         public OcrResult GetOcrResultFromCoordinate(int x, int y)
         {
             foreach (var result in Results)
@@ -80,6 +116,12 @@ namespace ScreenMagic
         public bool ContainsCoordinate(int x, int y)
         {
             return ((x >= X && x <= (X + Width)) && ((y >= Y) && y <= (Y + Height)));
+        }
+
+        public bool IsInBoundingBox(BoundingBox b)
+        {
+            return ((X >= b.X) && (X + Width <= b.X + b.Width)) && ((Y >= b.Y) && (Y + Height <= b.Y + b.Height));
+            
         }
     }
 
