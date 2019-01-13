@@ -207,6 +207,11 @@ namespace ScreenMagic
             {
                 SetWindowState(AppVisualState.Minimized);
             }
+            else if (this.WindowState == WindowState.Normal)
+            {
+                Update();
+                SetWindowState(AppVisualState.WithScreenshot);
+            }
         }
         private void UpdateLayoutElements()
         {
