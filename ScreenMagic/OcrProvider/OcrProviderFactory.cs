@@ -10,7 +10,7 @@ namespace ScreenMagic
     {
         public static IOcrResultProvider GetOcrResultsProvider()
         {
-            if (Modes.IsTest())
+            if (Config.IsTestOcrProvider())
             {
                 return new TestStubOcrProvider();
             }

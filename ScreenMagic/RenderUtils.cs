@@ -55,6 +55,7 @@ namespace ScreenMagic
                 //r.DrawImage(bg, new Rect(0, 0, bmp.Width, bmp.Height));
                 r.DrawImage(bmp, new Rect(0, 0, bmp.Width, bmp.Height));
 
+                if (results != null && results.BoundingBoxes != null)
                 //Render bounding boxes
                 foreach (var box in results.BoundingBoxes)
                 {

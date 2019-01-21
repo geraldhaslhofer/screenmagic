@@ -9,6 +9,7 @@ using System.Windows;
 using System.Windows.Media.Imaging;
 using System.IO;
 using System.Threading;
+using Microsoft.Win32;
 
 namespace ScreenMagic
 {
@@ -25,7 +26,11 @@ namespace ScreenMagic
             cur.Refresh();
             return cur.MainWindowHandle;
         }
-
+        public static double GetScale(Visual v)
+        {
+            var dpi = System.Windows.Media.VisualTreeHelper.GetDpi(v);
+            return dpi.PixelsPerDip;
+        }
         public static void ChangePos(IntPtr handle, RECT r)
         {
            
@@ -53,7 +58,7 @@ namespace ScreenMagic
 
         public static void Activate()
         {
-            IntPtr handle = Modes.WindowToWatch;
+            IntPtr handle = Config.WindowToWatch;
             if (handle != IntPtr.Zero)
             {
                 SetForegroundWindow(handle);
@@ -65,6 +70,24 @@ namespace ScreenMagic
             RECT rect = new RECT();
             IntPtr error = GetWindowRect(windowHandle, ref rect);
             return rect;
+        }
+
+        
+        public static Bitmap PrintWindow(IntPtr hwnd)
+        {
+            RECT rc = new RECT();
+            GetWindowRect(hwnd, ref rc);
+
+            Bitmap bmp = new Bitmap(rc.Right - rc.Left, rc.Bottom- rc.Top, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+            Graphics gfxBmp = Graphics.FromImage(bmp);
+            IntPtr hdcBitmap = gfxBmp.GetHdc();
+
+            PrintWindow(hwnd, hdcBitmap, 0);
+
+            gfxBmp.ReleaseHdc(hdcBitmap);
+            gfxBmp.Dispose();
+
+            return bmp;
         }
         public static Bitmap CaptureScreenshot(IntPtr windowHandle)
         {
@@ -118,6 +141,7 @@ namespace ScreenMagic
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool DeleteObject([In] IntPtr hObject);
 
+         
         [DllImport("user32.dll")]
         public static extern bool PrintWindow(IntPtr hWnd, IntPtr hdcBlt, int nFlags);
 

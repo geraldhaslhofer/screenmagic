@@ -17,9 +17,7 @@ namespace ScreenMagic
 {
     enum AppVisualState
     {
-        Launch = 0,
         WithScreenshot = 1,
-        Companion = 2,
         Minimized = 3
     }
 
@@ -29,37 +27,35 @@ namespace ScreenMagic
     public partial class MainWindow : Window
     {
         private IntPtr _windowToWatch = IntPtr.Zero;
-        private System.Timers.Timer _timer;
-        private bool _isActive = false;
        
-        OcrResults _lastOcrResults = null;
+        public OcrResults _lastOcrResults = null;
 
+        Screenshot _ux = null;
         
         IBitmapProvider _bitmapProvider;
         IOcrResultProvider _ocrProvider;
+
+        public double _scale = 1;
         public MainWindow()
         {
+            _scale = Utils.GetScale(this);
+            
             InitializeComponent();
             _bitmapProvider = BitmapProviderFactory.GetBitmapProvider();
             _ocrProvider = OcrProviderFactory.GetOcrResultsProvider();
 
-            _timer = new System.Timers.Timer(10000);
-            _timer.Elapsed += _timer_Elapsed;
-            this.SizeChanged += MainWindow_SizeChanged;
-            this.StateChanged += MainWindow_StateChanged;
-            MainImage.MouseDown += MainImage_MouseDown;
-            ScaleSelection.Items.Add(100);
-            ScaleSelection.Items.Add(66);
-            ScaleSelection.Items.Add(50);
-            ScaleSelection.Items.Add(25);
-            ScaleSelection.Items.Add(10);
-            ScaleSelection.SelectedIndex = 0;
-
-            PopulateListOfApps();
+             PopulateListOfApps();
             AppSelection.SelectionChanged += AppSelection_SelectionChanged;
-            //this.Closing += MainWindow_Closing;
+            Execute.IsEnabled = false;
+
+            _ux = new Screenshot(this);
             
-            SetWindowState(AppVisualState.Launch);
+
+            SetWindowState(AppVisualState.Minimized);
+        }
+        public void SetCopyText(string text)
+        {
+            CopyText.Content = text;
         }
 
         private void SetWindowState(AppVisualState state)
@@ -67,79 +63,36 @@ namespace ScreenMagic
             switch (state) {
                 case AppVisualState.Minimized:
                     {
-                        this.WindowState = WindowState.Minimized;
-                        SetSmallState();
-                        AppSelection.Visibility = Visibility.Visible;
-                        ScaleSelection.Visibility = Visibility.Visible;
-                        Execute.Visibility = Visibility.Visible;
-                        MainImage.Visibility = Visibility.Collapsed;
-                        Exit.Visibility = Visibility.Collapsed;
-                        CopyText.Visibility = Visibility.Collapsed;
-
+                        
+                        _ux.WindowState= WindowState.Minimized;
+                        _ux.Hide();
                     }
                     break;
-                case AppVisualState.Launch:
-                    {
-                        SetSmallState();
-                        AppSelection.Visibility = Visibility.Visible;
-                        ScaleSelection.Visibility = Visibility.Visible;
-                        Execute.Visibility = Visibility.Visible;
-                        MainImage.Visibility = Visibility.Collapsed;
-                        Exit.Visibility = Visibility.Collapsed;
-                        CopyText.Visibility = Visibility.Collapsed;
-                    } break;
                 case AppVisualState.WithScreenshot:
                     {
+                        _ux.Show();
+                        _ux.WindowState = WindowState.Normal;
                         //... move over app to watch
-                        RECT r = Utils.GetWindowRect(Modes.WindowToWatch);
-                        r.Bottom += 90; //Accommodate buttons etc.
-                        Utils.ChangePos(Utils.GetMainWindowsHandle(), r);
-
-                        AppSelection.Visibility = Visibility.Collapsed;
-                        ScaleSelection.Visibility = Visibility.Collapsed;
-                        Execute.Visibility = Visibility.Collapsed;
-                        MainImage.Visibility = Visibility.Visible;
-                        Exit.Visibility = Visibility.Visible;
-                        CopyText.Visibility = Visibility.Visible;
+                        RECT r = Utils.GetWindowRect(Config.WindowToWatch);
+                   
+                        _ux.Top = r.Top / _scale;
+                        _ux.Left = r.Left / _scale;
+                        _ux.Width = (r.Right - r.Left)/_scale;
+                        _ux.Height = (r.Bottom - r.Top)/_scale;
+                        
 
                     } break;
-                case AppVisualState.Companion:
-                    {
-                        SetSmallState();
-                        AppSelection.Visibility = Visibility.Visible;
-                        ScaleSelection.Visibility = Visibility.Visible;
-                        Execute.Visibility = Visibility.Visible;
-                        MainImage.Visibility = Visibility.Collapsed;
-                        Exit.Visibility = Visibility.Collapsed;
-                        CopyText.Visibility = Visibility.Collapsed;
-
-                        if (Modes.WindowToWatch != IntPtr.Zero)
-                        {
-                            //Move out of the way     
-                            RECT toWatch = Utils.GetWindowRect(Modes.WindowToWatch);
-                            this.Left += (toWatch.Right - toWatch.Left);
-                        }
-                    } break;
+                
             }
         }
 
-        private void SetSmallState()
-        {
-            this.Width = 449;
-            this.Height = 83;
-        }
-
-
-        private void MainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
-        {
-            e.Cancel = true;
-            SetWindowState(AppVisualState.Minimized);
-        }
-
+      
+        
         private void AppSelection_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             DesktopWindow w = (DesktopWindow)AppSelection.SelectedItem;
-            Modes.WindowToWatch = w.Handle;
+            Config.WindowToWatch = w.Handle;
+            Execute.IsEnabled = true;
         }
 
         private void PopulateListOfApps()
@@ -154,74 +107,74 @@ namespace ScreenMagic
             }
 
         }
-        private void MainImage_MouseDown(object sender, MouseButtonEventArgs e)
-        {
-            var clickPos = e.GetPosition(MainImage);
+        //private void MainImage_MouseDown(object sender, MouseButtonEventArgs e)
+        //{
+        //    var clickPos = e.GetPosition(MainImage);
 
-            //Figure out position
-            ImageSource imageSource = MainImage.Source;
-            RenderTargetBitmap bitmapImage = (RenderTargetBitmap)imageSource;
-            var pixelMousePositionX = e.GetPosition(MainImage).X * bitmapImage.PixelWidth / MainImage.Width;
-            var pixelMousePositionY = e.GetPosition(MainImage).Y * bitmapImage.PixelHeight / MainImage.Height;
+        //    //Figure out position
+        //    ImageSource imageSource = MainImage.Source;
+        //    RenderTargetBitmap bitmapImage = (RenderTargetBitmap)imageSource;
+        //    var pixelMousePositionX = e.GetPosition(MainImage).X * bitmapImage.PixelWidth / MainImage.Width;
+        //    var pixelMousePositionY = e.GetPosition(MainImage).Y * bitmapImage.PixelHeight / MainImage.Height;
 
-            System.Diagnostics.Debug.WriteLine(clickPos.ToString() + " " + pixelMousePositionX.ToString() + " "+ pixelMousePositionY.ToString());
+        //    System.Diagnostics.Debug.WriteLine(clickPos.ToString() + " " + pixelMousePositionX.ToString() + " "+ pixelMousePositionY.ToString());
 
             
-            var textResults = _lastOcrResults.GetOcrResultFromCoordinate((int)clickPos.X, (int)clickPos.Y);
+        //    var textResults = _lastOcrResults.GetOcrResultFromCoordinate((int)clickPos.X, (int)clickPos.Y);
 
-            string textToCopy = string.Empty;
+        //    string textToCopy = string.Empty;
 
-            if (textResults == null)
-            {
-                // try outer bounding box
+        //    if (textResults == null)
+        //    {
+        //        // try outer bounding box
 
-                var smallestBox  = _lastOcrResults.GetSmallestBoundingBox((int)clickPos.X, (int)clickPos.Y);
-                if (smallestBox != null)
-                {
-                    var allOcrResults = _lastOcrResults.GetOcrResultFromBoundingbox(smallestBox);
-                    if (allOcrResults != null && allOcrResults.Count > 0)
-                    {
-                        StringBuilder b = new StringBuilder();
-                        foreach (var aRes in allOcrResults)
-                        {
-                            b.Append(aRes.Text);
-                            b.Append(" ");
-                        }
-                        textToCopy = b.ToString();
-                    }
-                }
+        //        var smallestBox  = _lastOcrResults.GetSmallestBoundingBox((int)clickPos.X, (int)clickPos.Y);
+        //        if (smallestBox != null)
+        //        {
+        //            var allOcrResults = _lastOcrResults.GetOcrResultFromBoundingbox(smallestBox);
+        //            if (allOcrResults != null && allOcrResults.Count > 0)
+        //            {
+        //                StringBuilder b = new StringBuilder();
+        //                foreach (var aRes in allOcrResults)
+        //                {
+        //                    b.Append(aRes.Text);
+        //                    b.Append(" ");
+        //                }
+        //                textToCopy = b.ToString();
+        //            }
+        //        }
 
-            }
-            else { 
-                textToCopy = textResults.Text;             
-            }
+        //    }
+        //    else { 
+        //        textToCopy = textResults.Text;             
+        //    }
 
-            CopyText.Content = textToCopy;
-            Utils.SetClipboardText(textToCopy);
-            System.Diagnostics.Debug.WriteLine(textToCopy);
-        }
+        //    CopyText.Content = textToCopy;
+        //    Utils.SetClipboardText(textToCopy);
+        //    System.Diagnostics.Debug.WriteLine(textToCopy);
+        //}
 
-        private void MainWindow_StateChanged(object sender, EventArgs e)
-        {
-            if (this.WindowState == WindowState.Minimized)
-            {
-                SetWindowState(AppVisualState.Minimized);
-            }
-            else if (this.WindowState == WindowState.Normal)
-            {
-                Update();
-                SetWindowState(AppVisualState.WithScreenshot);
-            }
-        }
-        private void UpdateLayoutElements()
-        {
-            //MainImage.Height = this.Height - 20;
-            //MainImage.Width = this.Width - 20;
-        }
-        private void MainWindow_SizeChanged(object sender, SizeChangedEventArgs e)
-        {
-            UpdateLayoutElements();
-        }
+        //private void MainWindow_StateChanged(object sender, EventArgs e)
+        //{
+        //    if (this.WindowState == WindowState.Minimized)
+        //    {
+        //        SetWindowState(AppVisualState.Minimized);
+        //    }
+        //    else if (this.WindowState == WindowState.Normal)
+        //    {
+        //        Update();
+        //        SetWindowState(AppVisualState.WithScreenshot);
+        //    }
+        //}
+        //private void UpdateLayoutElements()
+        //{
+        //    //MainImage.Height = this.Height - 20;
+        //    //MainImage.Width = this.Width - 20;
+        //}
+        //private void MainWindow_SizeChanged(object sender, SizeChangedEventArgs e)
+        //{
+        //    UpdateLayoutElements();
+        //}
 
         private void Execute_Click(object sender, RoutedEventArgs e)
         {
@@ -252,25 +205,30 @@ namespace ScreenMagic
             //_timer.Start();
         }
 
-        private void _timer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
-        {
-            Application.Current.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal,
-                 new Action(() => this.Update()));
-        }
+        //private void _timer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
+        //{
+        //    //Application.Current.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal,
+        //         new Action(() => this.Update()));
+        //}
 
         private async void Update()
         {
-            if (Modes.WindowToWatch != IntPtr.Zero)
+            if (Config.WindowToWatch != IntPtr.Zero)
             {
 
                 //Figure out what to update, and at what resolution
-                double scaleFactor = (double)(int.Parse(ScaleSelection.SelectedItem.ToString())) / 100.0;
+                double scaleFactor = 1;/// _scale;
 
 
                 var screen = _bitmapProvider.CaptureScreenshot();
 
                 var imageSourceOrig = Utils.ImageSourceForBitmap(screen);
                 var imageSource = RenderUtils.ScaleImage(imageSourceOrig, scaleFactor);
+
+
+                //Render before we try to do OCR 
+                
+                _ux.SetImage(RenderUtils.DrawOriginalBmps(imageSource, null));
 
                 //Scale
 
@@ -279,7 +237,8 @@ namespace ScreenMagic
                 var results = await OcrUtils.GetOcrResults(jpegEncodedImage, scaleFactor);
                 _lastOcrResults = results;
 
-                MainImage.Source = RenderUtils.DrawOriginalBmps(imageSource, results);
+                
+                _ux.SetImage(RenderUtils.DrawOriginalBmps(imageSource, results));
             }
         }
 

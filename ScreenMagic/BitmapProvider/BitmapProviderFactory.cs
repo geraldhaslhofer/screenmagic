@@ -11,13 +11,13 @@ namespace ScreenMagic
 
         public static IBitmapProvider GetBitmapProvider()
         {
-            if (Modes.IsTest()) 
+            if (Config.IsTestBitmapProvider()) 
             {
                 return new TestStubScreenshotProvider();
             }
             else
             {
-                return new AppScreenshotProvider();
+                return new PrintScreenProvider();
             }
         }
     }

@@ -5,22 +5,17 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ScreenMagic"
         mc:Ignorable="d"
-        Title="ScreenMagic" Height="450" Width="800">
+        Title="ScreenMagic" Height="113.643" Width="263.715">
     <Grid>
-        <StackPanel x:Name="Divider" Orientation="Vertical" Margin="0,0,0,0">
-            <StackPanel x:Name="Divider3" Orientation="Vertical">
-                <Image x:Name="MainImage" HorizontalAlignment="Left" VerticalAlignment="Top" Stretch="None"/>
-            </StackPanel>
+        <StackPanel x:Name="Divider" Orientation="Vertical" Margin="0,0,0.286,-16.857">
             <StackPanel x:Name="Divider2" Orientation="Horizontal">
-                <ComboBox x:Name="AppSelection" Width="117" Height="18" Margin="8,10,0,0" FontSize="8"/>
-                <ComboBox x:Name="ScaleSelection" Width="117" Height="18" Margin="8,10,0,0" FontSize="8"/>
-                <Button x:Name="Execute" Content="Capture" HorizontalAlignment="Left" Margin="8,10,0,0" VerticalAlignment="Top" Width="150" Click="Execute_Click"/>
-                <Button x:Name="Exit" Content="Close" HorizontalAlignment="Left" Margin="8,10,0,0" VerticalAlignment="Top" Width="150" Click="Exit_Click" Background="#FFF3EA1A"/>
-
-                <Label x:Name="CopyText" Margin="8,10,0,0" Content=""/>
+                <ComboBox x:Name="AppSelection" Width="114" Height="18" Margin="8,10,0,0" FontSize="8"/>
+                <Button x:Name="Execute" Content="Capture" HorizontalAlignment="Right" Margin="8,10,0,0" VerticalAlignment="Top" Width="56" Click="Execute_Click"/>
 
             </StackPanel>
-          
+            <StackPanel>
+                <Label x:Name="CopyText" Margin="8,10,70.714,0" Height="27" Background="LightGray" />
+            </StackPanel>
         </StackPanel>
     </Grid>
 </Window>
