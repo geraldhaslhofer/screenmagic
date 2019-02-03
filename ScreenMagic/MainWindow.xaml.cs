@@ -38,6 +38,7 @@ namespace ScreenMagic
         public double _scale = 1;
         public MainWindow()
         {
+            //OcrEdge.DoSomething();
             _scale = Utils.GetScale(this);
             
             InitializeComponent();
