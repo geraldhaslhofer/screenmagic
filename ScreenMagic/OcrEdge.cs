@@ -10,10 +10,11 @@ namespace ScreenMagic
 {
     class OcrEdge
     {
-        public static void DoSomething()
+        public async static void DoSomething()
         {
-            Language ocrLanguage = new Language("en");
-            OcrEngine ocrEngine = OcrEngine.TryCreateFromLanguage(ocrLanguage);
+            //Language ocrLanguage = new Language("en");
+            //OcrEngine ocrEngine = OcrEngine.TryCreateFromLanguage(ocrLanguage);
+            //var ocrResult = await ocrEngine.RecognizeAsync(bitmap);
 
         }
     }

@@ -21,13 +21,18 @@ namespace ScreenMagic
         Minimized = 3
     }
 
+
+
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
     public partial class MainWindow : Window
     {
+        //Notifications area
+        private System.Windows.Forms.NotifyIcon notifyIcon = null;
+        private Dictionary<string, System.Drawing.Icon> _iconHandles = null;
+
         private IntPtr _windowToWatch = IntPtr.Zero;
-       
         public OcrResults _lastOcrResults = null;
 
         Screenshot _ux = null;
@@ -35,25 +40,88 @@ namespace ScreenMagic
         IBitmapProvider _bitmapProvider;
         IOcrResultProvider _ocrProvider;
 
+        //Watch dog for YourPhone app to appear
+        System.Timers.Timer _timer = new System.Timers.Timer(2000);
+        private bool _isAttachedToYourPhone = false;
+
+
         public double _scale = 1;
         public MainWindow()
         {
-            //OcrEdge.DoSomething();
+
+            ///--------------------------------------------------------------------------------------------------------------------------------------------------
+            //Setup notifications icons
+
+            _iconHandles = new Dictionary<string, System.Drawing.Icon>();
+
+            _iconHandles.Add("QuickLaunch", new System.Drawing.Icon(System.IO.Path.Combine(Environment.CurrentDirectory, @"Assets\cameramonitor.ico")));
+
+            notifyIcon = new System.Windows.Forms.NotifyIcon();
+            notifyIcon.Click += new EventHandler(notifyIcon_Click);
+            notifyIcon.DoubleClick += new EventHandler(notifyIcon_DoubleClick);
+            notifyIcon.Icon = _iconHandles["QuickLaunch"];
+            notifyIcon.Visible = true;
+
+            ///--------------------------------------------------------------------------------------------------------------------------------------------------
+
             _scale = Utils.GetScale(this);
-            
             InitializeComponent();
             _bitmapProvider = BitmapProviderFactory.GetBitmapProvider();
             _ocrProvider = OcrProviderFactory.GetOcrResultsProvider();
 
-             PopulateListOfApps();
+            PopulateListOfApps();
             AppSelection.SelectionChanged += AppSelection_SelectionChanged;
             Execute.IsEnabled = false;
 
             _ux = new Screenshot(this);
             
-
+            
             SetWindowState(AppVisualState.Minimized);
+
+            _timer.Elapsed += Timer_Elapsed;
+            _timer.Enabled = true;
+
         }
+
+        private void Timer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
+        {
+            _timer.Enabled = false;
+            var yourPhone = ProcessHelpers.GetYourPhoneWindow();
+            if (yourPhone != null)
+            {
+                // The YourPhone app is available
+                if (_isAttachedToYourPhone == false)
+                {
+                    // new attach
+                    _isAttachedToYourPhone = true;
+                    Config.WindowToWatch = yourPhone.Handle;
+
+                    //Hide UX (only Notify icon area remains)
+
+                    Application.Current.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal,
+                    new Action(() => this.Hide()));
+                    
+                }
+            }
+
+            _timer.Enabled = true ;
+            
+        }
+
+        private void notifyIcon_Click(object sender, EventArgs e)
+        {
+
+            //ShowSysTrayMenu();
+
+        }
+        private void notifyIcon_DoubleClick(object sender, EventArgs e)
+        {
+            Execute_Click(null, null);
+            
+        }
+
+
+
         public void SetCopyText(string text)
         {
             CopyText.Content = text;
@@ -99,9 +167,8 @@ namespace ScreenMagic
         private void PopulateListOfApps()
         {
             AppSelection.Items.Clear();
-
-            var windows = User32Helper.GetDesktopWindows();
-            var visible = from x in windows where x.IsVisible && x.Title.Length > 2 orderby x.Title select x;
+            
+            var visible = ProcessHelpers.GetActiveWindows();
             foreach (var avisible in visible)
             {
                 AppSelection.Items.Add(avisible);

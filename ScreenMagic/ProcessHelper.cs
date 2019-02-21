@@ -19,7 +19,26 @@ namespace ScreenMagic
         }
     }
 
-    public class User32Helper
+    public class ProcessHelpers
+    {
+
+        public static IEnumerable<DesktopWindow> GetActiveWindows()
+        {
+            var windows = User32Helper.GetDesktopWindows();
+            var visible = from x in windows where x.IsVisible && x.Title.Length > 2 orderby x.Title select x;
+            return visible;
+        }
+
+        public static DesktopWindow GetYourPhoneWindow()
+        {
+            var windows = GetActiveWindows();
+            var yourPhone = from x in windows where x.Title.ToString().ToLower().Contains("your phone") select x;
+            if (yourPhone == null || yourPhone.Count() == 0) return null;
+            return yourPhone.First();
+        }
+}
+
+public class User32Helper
     {
         public delegate bool EnumDelegate(IntPtr hWnd, int lParam);
 

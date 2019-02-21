@@ -20,7 +20,8 @@ namespace ScreenMagic
         static readonly IntPtr HWND_TOP = new IntPtr(0);
         static readonly IntPtr HWND_BOTTOM = new IntPtr(1);
 
-        public static IntPtr GetMainWindowsHandle()
+        
+    public static IntPtr GetMainWindowsHandle()
         {
             Process cur = Process.GetCurrentProcess();
             cur.Refresh();
