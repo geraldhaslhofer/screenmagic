@@ -11,6 +11,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using System.Diagnostics;
 
 namespace ScreenMagic
 {
@@ -21,21 +22,111 @@ namespace ScreenMagic
     {
 
         MainWindow _mainWindow = null;
+
+        // Interaction states
+        bool _isMouseDrag = false;
+        Point _startSelection = new Point();
+        Point _endSelection = new Point();
+        BitmapSource _originalBitmap = null;
+
         public Screenshot(MainWindow ownerWindow)
         {
             InitializeComponent();
             _mainWindow = ownerWindow;
 
-            MainImage.MouseDown += MainImage_MouseDown; ;
+            MainImage.MouseDown += MainImage_MouseDown;
 
+            //Set up selection of Text
+            MainImage.MouseLeftButtonDown += MainImage_MouseLeftButtonDown;
+            MainImage.MouseLeftButtonUp += MainImage_MouseLeftButtonUp;
+            MainImage.MouseMove += MainImage_MouseMove;
         }
 
-      
-        public void SetImage(ImageSource img)
+        private void MainImage_MouseMove(object sender, MouseEventArgs e)
         {
-            MainImage.Source = img;
+            if (_isMouseDrag)
+            {
+                _endSelection = e.GetPosition(MainImage);
+                //Create bitmap with the selected rectangle
+                var imageWithRect = RenderUtils.DrawSelectionRectangle(_originalBitmap, _startSelection, _endSelection);
+                MainImage.Source = imageWithRect;
+                Debug.WriteLine("MouseMove");
+            }
         }
 
+        private void MainImage_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            if (_isMouseDrag)
+            {
+                //Completed a selection, now copy to clipboard
+                _endSelection = e.GetPosition(MainImage);
+                _isMouseDrag = false;
+                Debug.WriteLine("Completed selection from: " + _startSelection.ToString() + " end: " + _endSelection.ToString());
+
+                string copiedText = GetTextFromScreenRect(_startSelection, _endSelection);
+                Debug.WriteLine("Detected text:" + copiedText);
+
+
+                //Render original image
+                MainImage.Source = _originalBitmap;
+            }
+            
+        }
+
+        private void MainImage_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            //Start selection
+            _isMouseDrag = true;
+            //Remember starting position
+            _startSelection = e.GetPosition(MainImage);
+            Debug.WriteLine("LeftMouseDown");
+        }
+
+        public void SetImage(BitmapSource img)
+        {
+            _originalBitmap = img;
+            MainImage.Source = _originalBitmap;
+        }
+
+        private string GetTextFromScreenRect(Point p1, Point p2)
+        {
+            Point p1_translated = TranslateScreenPosToImagePos(p1);
+            Point p2_translated = TranslateScreenPosToImagePos(p2);
+            BoundingBox b = new BoundingBox();
+            b.X = (int)(Math.Min(p1_translated.X, p2_translated.X));
+            b.Y = (int)(Math.Min(p1_translated.Y, p2_translated.Y));
+            b.Width = (int)(Math.Abs(p2_translated.X - p1_translated.X));
+            b.Height= (int)(Math.Abs(p2_translated.Y - p1_translated.Y));
+
+            var allOcrResults = _mainWindow._lastOcrResults.GetOcrResultFromBoundingbox(b);
+            if (allOcrResults != null && allOcrResults.Count > 0)
+            {
+                StringBuilder res = new StringBuilder();
+                foreach (var aRes in allOcrResults)
+                {
+                    res.Append(aRes.Text);
+                    res.Append(" ");
+                }
+                return res.ToString();
+            }
+
+            return String.Empty;
+
+        }
+        private Point TranslateScreenPosToImagePos(Point p)
+        {
+            ImageSource imageSource = MainImage.Source;
+            RenderTargetBitmap bitmapImage = (RenderTargetBitmap)imageSource;
+            var pixelMousePositionX = p.X * bitmapImage.PixelWidth / MainImage.Width;
+            var pixelMousePositionY = p.Y * bitmapImage.PixelHeight / MainImage.Height;
+
+
+            double finalClickPosX = p.X * _mainWindow._scale;
+            double finalClickPosY = p.Y * _mainWindow._scale;
+
+            return new Point(finalClickPosX, finalClickPosY);
+
+        }
         private void MainImage_MouseDown(object sender, MouseButtonEventArgs e)
         {
             var clickPos = e.GetPosition(MainImage);

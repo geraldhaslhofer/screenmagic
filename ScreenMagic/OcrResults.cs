@@ -23,6 +23,11 @@ namespace ScreenMagic
         {
             return ((x >= X && x <= (X + Width)) && ((y >= Y) && y <= (Y + Height)));
         }
+
+        //public bool IsFullyContainedInRectangle(int x1, int y1, int x2, int y2)
+        //{
+        //    return ((x1 <= X) && (y1 <= Y) && (x2 >= X) && (y2 >= Y));
+        //}
     }
 
     [DataContract]
@@ -91,6 +96,8 @@ namespace ScreenMagic
             }
             return null;
         }
+
+
 
 
     }

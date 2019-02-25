@@ -41,6 +41,28 @@ namespace ScreenMagic
             return target;
 
         }
+
+        public static BitmapSource DrawSelectionRectangle(BitmapSource src, Point start, Point end)
+        {
+            // bmp is the original BitmapImage
+            var target = new RenderTargetBitmap(src.PixelWidth, src.PixelHeight, src.DpiX, src.DpiY, PixelFormats.Pbgra32);
+            var visual = new DrawingVisual();
+
+            using (var r = visual.RenderOpen())
+            {
+                //Draw image background
+                r.DrawImage(src, new Rect(0, 0, src.Width, src.Height));
+                r.DrawRectangle(null, new Pen(Brushes.Red, 1.0), new Rect(Math.Min(start.X,end.X),
+                                                                          Math.Min(start.Y, end.Y), 
+                                                                          Math.Abs(end.X - start.X), 
+                                                                          Math.Abs(end.Y - start.Y)));
+                
+            }
+
+            target.Render(visual);
+            return target;
+        }
+
         public static BitmapSource DrawOriginalBmps(BitmapSource bmp, OcrResults results)
         {
 
