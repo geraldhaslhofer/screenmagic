@@ -141,9 +141,7 @@
     <Content Include="Assets\background.JPG">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Assets\cameramonitor.ico">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
+    <EmbeddedResource Include="Assets\cameramonitor.ico" />
     <Content Include="Assets\response.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

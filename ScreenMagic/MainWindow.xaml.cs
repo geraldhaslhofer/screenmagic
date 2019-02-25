@@ -81,8 +81,13 @@ namespace ScreenMagic
 
             _iconHandles = new Dictionary<string, System.Drawing.Icon>();
 
-            _iconHandles.Add("QuickLaunch", new System.Drawing.Icon(System.IO.Path.Combine(Environment.CurrentDirectory, @"Assets\cameramonitor.ico")));
-
+            //Load from resources
+            System.Reflection.Assembly assembly = System.Reflection.Assembly.GetExecutingAssembly();
+            string resourceName = assembly.GetManifestResourceNames().Single(str => str.EndsWith("cameramonitor.ico"));
+            using (System.IO.Stream stream = assembly.GetManifestResourceStream(resourceName))
+            {
+                _iconHandles.Add("QuickLaunch", new System.Drawing.Icon(stream));
+            }
             notifyIcon = new System.Windows.Forms.NotifyIcon();
             notifyIcon.Click += new EventHandler(notifyIcon_Click);
             notifyIcon.DoubleClick += new EventHandler(notifyIcon_DoubleClick);
