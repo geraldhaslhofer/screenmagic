@@ -17,5 +17,10 @@
         <Image x:Name="MainImage" HorizontalAlignment="Left" VerticalAlignment="Top" Stretch="Uniform"/>
         <Button x:Name="Hide" Content="X" HorizontalAlignment="Right" Margin="8,10,10,10" VerticalAlignment="Top" Width="56" Click ="Hide_Click"/>
 
+        <Label x:Name="StatusMessage" HorizontalAlignment="Center" Margin="0,0,0,0" VerticalAlignment="Center">
+            <TextBlock x:Name="StatusMessageInternal" TextWrapping="Wrap"></TextBlock>
+        </Label>
+
+
     </Grid>
 </Window>

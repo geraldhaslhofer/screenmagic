@@ -75,7 +75,12 @@ namespace ScreenMagic
                 //render background
                 //BitmapSource bg = GetImageFromPath(Path.Combine(Utils.GetAssemblyPath(), "Assets\\background.jpg"));
                 //r.DrawImage(bg, new Rect(0, 0, bmp.Width, bmp.Height));
-                r.DrawImage(bmp, new Rect(0, 0, bmp.Width, bmp.Height));
+                Rect boundary = new Rect(0, 0, bmp.Width, bmp.Height);
+                r.DrawImage(bmp, boundary);
+
+                //Draw wide rectangle around the image to ensure users unerstand they're looking at a snapshot, not the original app
+                r.DrawRectangle(null, new Pen(Brushes.Yellow, 15.0), boundary);
+
 
                 if (results != null && results.BoundingBoxes != null)
                 //Render bounding boxes

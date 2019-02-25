@@ -29,10 +29,17 @@ namespace ScreenMagic
         Point _endSelection = new Point();
         BitmapSource _originalBitmap = null;
 
+        //Animation timer to have Window disappear after text has been copied
+        System.Timers.Timer _timer = new System.Timers.Timer(2000);
+
         public Screenshot(MainWindow ownerWindow)
         {
             InitializeComponent();
             _mainWindow = ownerWindow;
+            
+
+            StatusMessage.Visibility = Visibility.Hidden;
+            StatusMessageInternal.Visibility = Visibility.Hidden;
 
             MainImage.MouseDown += MainImage_MouseDown;
 
@@ -40,6 +47,16 @@ namespace ScreenMagic
             MainImage.MouseLeftButtonDown += MainImage_MouseLeftButtonDown;
             MainImage.MouseLeftButtonUp += MainImage_MouseLeftButtonUp;
             MainImage.MouseMove += MainImage_MouseMove;
+
+            _timer.Elapsed += _timer_Elapsed;
+        }
+
+        private void _timer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
+        {
+            _timer.Enabled = false;
+            Application.Current.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal,
+                  new Action(() => this.HideWindow()));
+
         }
 
         private void MainImage_MouseMove(object sender, MouseEventArgs e)
@@ -54,6 +71,13 @@ namespace ScreenMagic
             }
         }
 
+        private void HideWindow()
+        {
+            MainImage.Source = null;
+            StatusMessageInternal.Text= String.Empty;
+            this.Hide();
+        }
+
         private void MainImage_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
             if (_isMouseDrag)
@@ -64,11 +88,24 @@ namespace ScreenMagic
                 Debug.WriteLine("Completed selection from: " + _startSelection.ToString() + " end: " + _endSelection.ToString());
 
                 string copiedText = GetTextFromScreenRect(_startSelection, _endSelection);
+                MainImage.Source = null;
+
+                StatusMessageInternal.Text= "Copied text to clipboard" + 
+                    Environment.NewLine +
+                    Environment.NewLine + 
+                    copiedText;
+
+                Utils.SetClipboardText(copiedText);
+
+                StatusMessage.Visibility = Visibility.Visible;
+                StatusMessageInternal.Visibility = Visibility.Visible;
+
                 Debug.WriteLine("Detected text:" + copiedText);
 
+                //Start timer to remove window
+                _timer.Enabled = true;
 
                 //Render original image
-                MainImage.Source = _originalBitmap;
             }
             
         }
@@ -129,57 +166,57 @@ namespace ScreenMagic
         }
         private void MainImage_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            var clickPos = e.GetPosition(MainImage);
+            //var clickPos = e.GetPosition(MainImage);
 
-            //Figure out position
-            ImageSource imageSource = MainImage.Source;
-            RenderTargetBitmap bitmapImage = (RenderTargetBitmap)imageSource;
-            var pixelMousePositionX = e.GetPosition(MainImage).X * bitmapImage.PixelWidth / MainImage.Width;
-            var pixelMousePositionY = e.GetPosition(MainImage).Y * bitmapImage.PixelHeight / MainImage.Height;
+            ////Figure out position
+            //ImageSource imageSource = MainImage.Source;
+            //RenderTargetBitmap bitmapImage = (RenderTargetBitmap)imageSource;
+            //var pixelMousePositionX = e.GetPosition(MainImage).X * bitmapImage.PixelWidth / MainImage.Width;
+            //var pixelMousePositionY = e.GetPosition(MainImage).Y * bitmapImage.PixelHeight / MainImage.Height;
 
-            System.Diagnostics.Debug.WriteLine(clickPos.ToString() + " " + pixelMousePositionX.ToString() + " " + pixelMousePositionY.ToString());
+            //System.Diagnostics.Debug.WriteLine(clickPos.ToString() + " " + pixelMousePositionX.ToString() + " " + pixelMousePositionY.ToString());
 
-            double finalClickPosX = clickPos.X * _mainWindow._scale;
-            double finalClickPosY = clickPos.Y * _mainWindow._scale;
+            //double finalClickPosX = clickPos.X * _mainWindow._scale;
+            //double finalClickPosY = clickPos.Y * _mainWindow._scale;
 
-            var textResults = _mainWindow._lastOcrResults.GetOcrResultFromCoordinate((int)finalClickPosX, (int)finalClickPosY);
+            //var textResults = _mainWindow._lastOcrResults.GetOcrResultFromCoordinate((int)finalClickPosX, (int)finalClickPosY);
 
-            string textToCopy = string.Empty;
+            //string textToCopy = string.Empty;
 
-            if (textResults == null)
-            {
-                // try outer bounding box
+            //if (textResults == null)
+            //{
+            //    // try outer bounding box
 
-                var smallestBox = _mainWindow._lastOcrResults.GetSmallestBoundingBox((int)clickPos.X, (int)clickPos.Y);
-                if (smallestBox != null)
-                {
-                    var allOcrResults = _mainWindow._lastOcrResults.GetOcrResultFromBoundingbox(smallestBox);
-                    if (allOcrResults != null && allOcrResults.Count > 0)
-                    {
-                        StringBuilder b = new StringBuilder();
-                        foreach (var aRes in allOcrResults)
-                        {
-                            b.Append(aRes.Text);
-                            b.Append(" ");
-                        }
-                        textToCopy = b.ToString();
-                    }
-                }
+            //    var smallestBox = _mainWindow._lastOcrResults.GetSmallestBoundingBox((int)clickPos.X, (int)clickPos.Y);
+            //    if (smallestBox != null)
+            //    {
+            //        var allOcrResults = _mainWindow._lastOcrResults.GetOcrResultFromBoundingbox(smallestBox);
+            //        if (allOcrResults != null && allOcrResults.Count > 0)
+            //        {
+            //            StringBuilder b = new StringBuilder();
+            //            foreach (var aRes in allOcrResults)
+            //            {
+            //                b.Append(aRes.Text);
+            //                b.Append(" ");
+            //            }
+            //            textToCopy = b.ToString();
+            //        }
+            //    }
 
-            }
-            else
-            {
-                textToCopy = textResults.Text;
-            }
+            //}
+            //else
+            //{
+            //    textToCopy = textResults.Text;
+            //}
 
-            _mainWindow.SetCopyText(textToCopy);
-            Utils.SetClipboardText(textToCopy);
-            System.Diagnostics.Debug.WriteLine(textToCopy);
+            //_mainWindow.SetCopyText(textToCopy);
+            //Utils.SetClipboardText(textToCopy);
+            //System.Diagnostics.Debug.WriteLine(textToCopy);
         }
 
         private void Hide_Click(object sender, RoutedEventArgs e)
         {
-            this.Hide();
+            this.HideWindow();
         }
     }
 }
