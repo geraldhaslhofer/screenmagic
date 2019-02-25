@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -7,11 +8,13 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
+
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Windows.Graphics.Display;
 
 namespace ScreenMagic
 {
@@ -46,8 +49,32 @@ namespace ScreenMagic
 
 
         public double _scale = 1;
+
+        private void _Test()
+        {
+            int screenLeft = System.Windows.Forms.SystemInformation.VirtualScreen.Left;
+            int screenTop = System.Windows.Forms.SystemInformation.VirtualScreen.Top;
+            int screenWidth = System.Windows.Forms.SystemInformation.VirtualScreen.Width;
+            int screenHeight = System.Windows.Forms.SystemInformation.VirtualScreen.Height;
+            using (Bitmap bmp = new Bitmap(screenWidth, screenHeight))
+            {
+                // Draw the screenshot into our bitmap.
+                using (Graphics g = Graphics.FromImage(bmp))
+                {
+                    g.CopyFromScreen(screenLeft, screenTop, 0, 0, bmp.Size);
+                }
+
+                // Do something with the Bitmap here, like save it to a file:
+                bmp.Save("c:\\test\\TestImage.jpg", System.Drawing.Imaging.ImageFormat.Jpeg);
+            }
+        }
         public MainWindow()
         {
+
+            //var bmp = LowLevelUtils.GetDesktopWindowCaptureAsBitmap();
+            //var yourPhone = ProcessHelpers.GetYourPhoneWindow();
+            //var bmp = LowLevelUtils.GetBitmapFromHwnd(yourPhone.Handle);
+            //bmp.Save("c:\\test\\TestImage5.jpg", System.Drawing.Imaging.ImageFormat.Jpeg);
 
             ///--------------------------------------------------------------------------------------------------------------------------------------------------
             //Setup notifications icons

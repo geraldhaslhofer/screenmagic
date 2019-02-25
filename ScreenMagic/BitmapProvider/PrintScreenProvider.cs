@@ -11,7 +11,7 @@ namespace ScreenMagic
     {
         Bitmap IBitmapProvider.CaptureScreenshot()
         {
-            var screen = Utils.CaptureScreenshot(Config.WindowToWatch);
+            var screen = LowLevelUtils.GetBitmapFromHwnd(Config.WindowToWatch);
             return screen;
         }
     }

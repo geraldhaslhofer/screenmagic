@@ -15,6 +15,10 @@ namespace ScreenMagic
             string testimagePath = Path.Combine(Utils.GetAssemblyPath(), "Assets\\test.jpg");
             Bitmap bitmap = (Bitmap)Bitmap.FromFile(testimagePath);
             return bitmap;
+
+            
         }
+
+        
     }
 }
