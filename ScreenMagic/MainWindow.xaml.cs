@@ -148,7 +148,7 @@ namespace ScreenMagic
                 long id = Timeline.GetIdFromUri(launchArg);
                 if (id > 0)
                 {
-                    System.Windows.Forms.MessageBox.Show("show!" + id.ToString());
+                    //System.Windows.Forms.MessageBox.Show("show!" + id.ToString());
                     _bitmapProvider = new CachedBitmapProvider(id);
                     UpdateCached();
 
