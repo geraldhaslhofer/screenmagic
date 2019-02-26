@@ -33,6 +33,12 @@ namespace ScreenMagic
     {
         //Notifications area
         private System.Windows.Forms.NotifyIcon notifyIcon = null;
+        private System.Windows.Forms.ContextMenu contextMenu = null;
+        private System.Windows.Forms.MenuItem menuItem1;
+        private System.Windows.Forms.MenuItem menuItem2;
+        private System.Windows.Forms.MenuItem menuItem3;
+
+
         private Dictionary<string, System.Drawing.Icon> _iconHandles = null;
 
         private IntPtr _windowToWatch = IntPtr.Zero;
@@ -47,41 +53,21 @@ namespace ScreenMagic
         System.Timers.Timer _timer = new System.Timers.Timer(2000);
         private bool _isAttachedToYourPhone = false;
 
+        //Recording timer
+        System.Timers.Timer _timerRecord = new System.Timers.Timer(5000);
+        private bool _isRecording = false;
 
         public double _scale = 1;
-
-        private void _Test()
-        {
-            int screenLeft = System.Windows.Forms.SystemInformation.VirtualScreen.Left;
-            int screenTop = System.Windows.Forms.SystemInformation.VirtualScreen.Top;
-            int screenWidth = System.Windows.Forms.SystemInformation.VirtualScreen.Width;
-            int screenHeight = System.Windows.Forms.SystemInformation.VirtualScreen.Height;
-            using (Bitmap bmp = new Bitmap(screenWidth, screenHeight))
-            {
-                // Draw the screenshot into our bitmap.
-                using (Graphics g = Graphics.FromImage(bmp))
-                {
-                    g.CopyFromScreen(screenLeft, screenTop, 0, 0, bmp.Size);
-                }
-
-                // Do something with the Bitmap here, like save it to a file:
-                bmp.Save("c:\\test\\TestImage.jpg", System.Drawing.Imaging.ImageFormat.Jpeg);
-            }
-        }
+        
         public MainWindow()
         {
-
-            //var bmp = LowLevelUtils.GetDesktopWindowCaptureAsBitmap();
-            //var yourPhone = ProcessHelpers.GetYourPhoneWindow();
-            //var bmp = LowLevelUtils.GetBitmapFromHwnd(yourPhone.Handle);
-            //bmp.Save("c:\\test\\TestImage5.jpg", System.Drawing.Imaging.ImageFormat.Jpeg);
 
             ///--------------------------------------------------------------------------------------------------------------------------------------------------
             //Setup notifications icons
 
             _iconHandles = new Dictionary<string, System.Drawing.Icon>();
 
-            //Load from resources
+            //Load icon from resources
             System.Reflection.Assembly assembly = System.Reflection.Assembly.GetExecutingAssembly();
             string resourceName = assembly.GetManifestResourceNames().Single(str => str.EndsWith("cameramonitor.ico"));
             using (System.IO.Stream stream = assembly.GetManifestResourceStream(resourceName))
@@ -93,6 +79,42 @@ namespace ScreenMagic
             notifyIcon.DoubleClick += new EventHandler(notifyIcon_DoubleClick);
             notifyIcon.Icon = _iconHandles["QuickLaunch"];
             notifyIcon.Visible = true;
+
+            //Context menu
+            this.contextMenu = new System.Windows.Forms.ContextMenu();
+            this.menuItem1 = new System.Windows.Forms.MenuItem();
+            this.menuItem2 = new System.Windows.Forms.MenuItem();
+            this.menuItem3 = new System.Windows.Forms.MenuItem();
+
+
+            // Initialize menuItem1
+            this.menuItem1.Index = 0;
+            this.menuItem1.Text = "E&xit";
+            this.menuItem1.Click += new System.EventHandler(this.menuItem1_Click);
+
+            this.menuItem2.Index = 1;
+            this.menuItem2.Text = "&Start recording";
+            this.menuItem2.Click += new System.EventHandler(this.menuItem2_Click);
+
+            this.menuItem3.Index = 2;
+            this.menuItem3.Text = "S&top recording";
+            this.menuItem3.Click += new System.EventHandler(this.menuItem3_Click);
+
+
+            // Initialize contextMenus
+            this.contextMenu.MenuItems.AddRange(
+                        new System.Windows.Forms.MenuItem[] { this.menuItem1, this.menuItem2, this.menuItem3 });
+
+
+            this.notifyIcon.ContextMenu = contextMenu;
+
+            // Recording
+            _isRecording = false;
+            SetRecordingUx();
+
+            _timerRecord.Elapsed += _timerRecord_Elapsed;
+            Recording.EnsureWorkingDirectory();
+
 
             ///--------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -113,6 +135,31 @@ namespace ScreenMagic
             _timer.Elapsed += Timer_Elapsed;
             _timer.Enabled = true;
 
+        }
+
+        private async void _timerRecord_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
+        {
+            _timerRecord.Enabled = false;
+            var screen = _bitmapProvider.CaptureScreenshot();
+            await Recording.CaptureAndPersistScreenshot(screen);
+            if (_isRecording)
+            {
+                _timerRecord.Enabled = true;
+            }
+        }
+
+        private void SetRecordingUx()
+        {
+            if (_isRecording)
+            {
+                menuItem2.Enabled = false; //Recording is now disabled
+                menuItem3.Enabled = true;
+            }
+            else
+            {
+                menuItem2.Enabled = true; //Recording is now disabled
+                menuItem3.Enabled = false;
+            }
         }
 
         private void Timer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
@@ -142,17 +189,37 @@ namespace ScreenMagic
 
         private void notifyIcon_Click(object sender, EventArgs e)
         {
-
-            //ShowSysTrayMenu();
-
+            //KeyUtils.DoMouseClick();
         }
         private void notifyIcon_DoubleClick(object sender, EventArgs e)
         {
-            Execute_Click(null, null);
+            Execute_Click(null, null);    
+        }
+
+        private void menuItem1_Click(object Sender, EventArgs e)
+        {
+            notifyIcon.Visible = false;
+            // Close the form, which closes the application.
+            System.Windows.Application.Current.Shutdown();
+        }
+
+        //Start recording
+        private void menuItem2_Click(object Sender, EventArgs e)
+        {
+            _isRecording = true;
+            SetRecordingUx();
+            _timerRecord.Enabled = true;
             
         }
 
-
+        //Stop recording
+        private void menuItem3_Click(object Sender, EventArgs e)
+        {
+            _isRecording = false;
+            _timer.Enabled = false;
+            SetRecordingUx();
+            
+        }
 
         public void SetCopyText(string text)
         {

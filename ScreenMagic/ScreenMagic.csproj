@@ -71,7 +71,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="LowLevelUtils.cs" />
+    <Compile Include="KeyUtils.cs" />
+    <Compile Include="Recording.cs" />
+    <Compile Include="ScreenUtils\LowLevelUtils.cs" />
     <Compile Include="ScreenUtils\MonitorHelper.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>

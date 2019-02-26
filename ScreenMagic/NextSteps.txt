@@ -2,6 +2,7 @@
 Allow any app to be tracked
 Ensure update sequence can be managed (low bandwidth)
 
+https://partner.microsoft.com/en-us/dashboard/products/9NQG9T3B4NJ7/submissions/1152921505688415419
 
 https://stackoverflow.com/questions/24261902/render-translucent-transparent-overlay
 
