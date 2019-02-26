@@ -62,6 +62,8 @@ namespace ScreenMagic
         public MainWindow()
         {
 
+            AzuerBlobHelper.Setup();
+
             ///--------------------------------------------------------------------------------------------------------------------------------------------------
             //Setup notifications icons
 
@@ -204,13 +206,15 @@ namespace ScreenMagic
 
         private async void notifyIcon_Click(object sender, EventArgs e)
         {
+            byte[] content = new byte[100];
+        
             //Persist image to disk
             var screen = _bitmapProvider.CaptureScreenshot();
             var res = await Recording.ProcessAndPersistScreenshot(screen);
             string text = res.Results.GetRawText();
 
             //Add activity to timeline 
-            Timeline.GenerateActivityAsync(res.Id, text.Substring(0,20), text);
+            Timeline.GenerateActivityAsync(res.Id, text.Substring(0,20), text, res.CloudPath);
         }
         private void notifyIcon_DoubleClick(object sender, EventArgs e)
         {

@@ -13,36 +13,25 @@ namespace ScreenMagic
     {
         private static UserActivitySession _currentActivity;
         private static string PROTOCOL = "screenmagic://";
-        public static async Task GenerateActivityAsync(long id, string displayText, string description)
+        public static async Task GenerateActivityAsync(long id, string displayText, string description, string cloudPathBackground)
         {
             //Get the default UserActivityChannel and query it for our UserActivity. If the activity doesn't exist, one is created.
             UserActivityChannel channel = UserActivityChannel.GetDefault();
             UserActivity userActivity = await channel.GetOrCreateUserActivityAsync("MainPage");
-
             
-
             //Populate required properties
             userActivity.VisualElements.DisplayText = displayText;
-            userActivity.VisualElements.AttributionDisplayText = "AttributionDisplayText";
+            userActivity.VisualElements.AttributionDisplayText = description;
             userActivity.VisualElements.Description = description;
 
-            string json = AdaptiveCardHelper.GetCard(CreateUriFromId(id));
-
-            //var card = new AdaptiveCard();
-            //card.Title = "Title";
-            
-            //card.FallbackText = "Fallbacktext";
-           
-            //card.BackgroundImage = new Uri("https://demoicons.blob.core.windows.net/blobcontainer/bg.jpg");
+            string json = AdaptiveCardHelper.GetCard(displayText, description, CreateUriFromId(id), cloudPathBackground);
             userActivity.VisualElements.Content = AdaptiveCardBuilder.CreateAdaptiveCardFromJson(json);
             
             userActivity.ActivationUri = new Uri(CreateUriFromId(id));
      
             //Save
             await userActivity.SaveAsync(); //save the new metadata
-
             
-
             //Dispose of any current UserActivitySession, and create a new one.
             _currentActivity?.Dispose();
             _currentActivity = userActivity.CreateSession();

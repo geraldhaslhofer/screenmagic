@@ -15,6 +15,7 @@ namespace ScreenMagic
         public OcrResults Results;
         public Bitmap BitmapImage;
         public byte[] JpegImage;
+        public string CloudPath;
     }
     class Recording
     {
@@ -38,16 +39,26 @@ namespace ScreenMagic
             }
         }
 
-        public static long Persist(byte[] jpegEncodedImage, OcrResults results)
+        public static void Persist(byte[] jpegEncodedImage, OcrResults results, out long id, out string cloudPath)
         {   
             string prefix = GetUniqueFileNamePrefix();
-            string filename = Path.Combine(GetWorkingDir(), prefix + ".jpeg");
+            string filenameImage = prefix + ".jpeg";
+            string filename = Path.Combine(GetWorkingDir(), filenameImage);
+
+            //Persist jpg locally
             FileStream f = new FileStream(filename, FileMode.CreateNew);
             f.Write(jpegEncodedImage, 0, jpegEncodedImage.Count());
             f.Close();
+
+            //Persist jpg in the cloud
+            cloudPath = AzuerBlobHelper.UploadFile(jpegEncodedImage, filenameImage).GetAwaiter().GetResult();
+
+            //Persist text locally
             string serializePath = Path.Combine(GetWorkingDir(), prefix + ".json");
             SerializeOcrResults(results, Path.Combine(serializePath));
-            return long.Parse(prefix);
+
+            id = long.Parse(prefix);
+           
         }
 
         public async static Task<RecordingResult> ProcessAndPersistScreenshot(Bitmap screen)
@@ -55,11 +66,16 @@ namespace ScreenMagic
             double scaleFactor = 1;
             byte[] jpegEncodedImage = Utils.SerializeBitmapToJpeg(screen);
             var results = await OcrUtils.GetOcrResults(jpegEncodedImage, scaleFactor);
-            long id = Persist(jpegEncodedImage, results);
+
+            long id;
+            string cloudPath;
+
+            Persist(jpegEncodedImage, results, out id, out cloudPath);
             RecordingResult r = new RecordingResult();
             r.Id = id;
             r.JpegImage = jpegEncodedImage;
             r.Results = results;
+            r.CloudPath = cloudPath;
             return r;
         }
             
