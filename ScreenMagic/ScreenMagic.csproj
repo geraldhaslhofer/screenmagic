@@ -82,6 +82,7 @@
     </ApplicationDefinition>
     <Compile Include="AdaptiveCardHelper.cs" />
     <Compile Include="Azure\AzureBlobHelper.cs" />
+    <Compile Include="BitmapProvider\CachedBitmapProvider.cs" />
     <Compile Include="KeyUtils.cs" />
     <Compile Include="Recording.cs" />
     <Compile Include="ScreenUtils\LowLevelUtils.cs" />

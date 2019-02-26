@@ -39,6 +39,22 @@ namespace ScreenMagic
             }
         }
 
+        public static void Retrieve(long id, out byte[] jpegEncodedPath, out OcrResults ocrResults)
+        {
+            string filenameImage = id.ToString() + ".jpeg";
+            string filename = Path.Combine(GetWorkingDir(), filenameImage);
+            FileStream f = new FileStream(filename, FileMode.Open);
+            jpegEncodedPath = new byte[f.Length];
+            f.Read(jpegEncodedPath, 0, (int) f.Length);
+            f.Close();
+
+            //OcrResults
+
+            string serializePath = Path.Combine(GetWorkingDir(), id.ToString() + ".json");
+            ocrResults = DeserializeOcrResults(Path.Combine(GetWorkingDir(), serializePath));
+
+
+        }
         public static void Persist(byte[] jpegEncodedImage, OcrResults results, out long id, out string cloudPath)
         {   
             string prefix = GetUniqueFileNamePrefix();

@@ -147,8 +147,11 @@ namespace ScreenMagic
                 //System.Windows.Forms.MessageBox.Show("launcharg!" + args[1]);
                 long id = Timeline.GetIdFromUri(launchArg);
                 if (id > 0)
-                {                    
+                {
                     System.Windows.Forms.MessageBox.Show("show!" + id.ToString());
+                    _bitmapProvider = new CachedBitmapProvider(id);
+                    UpdateCached();
+
                 }
             }
             
@@ -402,6 +405,31 @@ namespace ScreenMagic
         //    //Application.Current.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal,
         //         new Action(() => this.Update()));
         //}
+
+
+        private async void UpdateCached()
+        {
+            var screen = _bitmapProvider.CaptureScreenshot();
+
+            var imageSourceOrig = Utils.ImageSourceForBitmap(screen);
+            var imageSource = RenderUtils.ScaleImage(imageSourceOrig, 1);
+
+
+            //Render before we try to do OCR 
+
+            _ux.SetImage(RenderUtils.DrawOriginalBmps(imageSource, null));
+
+            //Scale
+
+            byte[] jpegEncodedImage = Utils.SerializeBitmapToJpeg(screen);
+
+            var results = await OcrUtils.GetOcrResults(jpegEncodedImage, 1);
+            _lastOcrResults = results;
+
+
+            _ux.SetImage(RenderUtils.DrawOriginalBmps(imageSource, results));
+            
+        }
 
         private async void Update()
         {
