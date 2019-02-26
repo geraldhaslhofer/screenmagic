@@ -52,7 +52,16 @@ namespace ScreenMagic
             return x;
         }
 
-        
+        public string GetRawText()
+        {
+            StringBuilder b = new StringBuilder();
+            foreach (var item in Results)
+            {
+                b.Append(item.Text);
+                b.Append(" ");
+            }
+            return b.ToString();
+        }
 
         public BoundingBox GetSmallestBoundingBox(int x, int y)
         {

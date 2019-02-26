@@ -114,8 +114,7 @@ namespace ScreenMagic
 
             _timerRecord.Elapsed += _timerRecord_Elapsed;
             Recording.EnsureWorkingDirectory();
-
-
+            
             ///--------------------------------------------------------------------------------------------------------------------------------------------------
 
             _scale = Utils.GetScale(this);
@@ -135,13 +134,29 @@ namespace ScreenMagic
             _timer.Elapsed += Timer_Elapsed;
             _timer.Enabled = true;
 
+            //Have we been protocol launched?
+
+            string[] args = Environment.GetCommandLineArgs();
+        
+            if (args != null && args.Count() > 1)
+            {
+                string launchArg = args[1];
+
+                //System.Windows.Forms.MessageBox.Show("launcharg!" + args[1]);
+                long id = Timeline.GetIdFromUri(launchArg);
+                if (id > 0)
+                {                    
+                    System.Windows.Forms.MessageBox.Show("show!" + id.ToString());
+                }
+            }
+            
         }
 
         private async void _timerRecord_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
             _timerRecord.Enabled = false;
             var screen = _bitmapProvider.CaptureScreenshot();
-            await Recording.CaptureAndPersistScreenshot(screen);
+            await Recording.ProcessAndPersistScreenshot(screen);
             if (_isRecording)
             {
                 _timerRecord.Enabled = true;
@@ -187,9 +202,15 @@ namespace ScreenMagic
             
         }
 
-        private void notifyIcon_Click(object sender, EventArgs e)
+        private async void notifyIcon_Click(object sender, EventArgs e)
         {
-            //KeyUtils.DoMouseClick();
+            //Persist image to disk
+            var screen = _bitmapProvider.CaptureScreenshot();
+            var res = await Recording.ProcessAndPersistScreenshot(screen);
+            string text = res.Results.GetRawText();
+
+            //Add activity to timeline 
+            Timeline.GenerateActivityAsync(res.Id, text.Substring(0,20), text);
         }
         private void notifyIcon_DoubleClick(object sender, EventArgs e)
         {

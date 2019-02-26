@@ -9,6 +9,13 @@ using Newtonsoft.Json;
 
 namespace ScreenMagic
 {
+    public class RecordingResult
+    {
+        public long Id;
+        public OcrResults Results;
+        public Bitmap BitmapImage;
+        public byte[] JpegImage;
+    }
     class Recording
     {
         private static string GetWorkingDir()
@@ -31,27 +38,31 @@ namespace ScreenMagic
             }
         }
 
-        public async static Task<bool> CaptureAndPersistScreenshot(Bitmap screen)
-        {
-            double scaleFactor = 1;
-            byte[] jpegEncodedImage = Utils.SerializeBitmapToJpeg(screen);
-
+        public static long Persist(byte[] jpegEncodedImage, OcrResults results)
+        {   
             string prefix = GetUniqueFileNamePrefix();
-
             string filename = Path.Combine(GetWorkingDir(), prefix + ".jpeg");
             FileStream f = new FileStream(filename, FileMode.CreateNew);
             f.Write(jpegEncodedImage, 0, jpegEncodedImage.Count());
             f.Close();
-
-            var results = await OcrUtils.GetOcrResults(jpegEncodedImage, scaleFactor);
             string serializePath = Path.Combine(GetWorkingDir(), prefix + ".json");
-
             SerializeOcrResults(results, Path.Combine(serializePath));
-
-            var test = DeserializeOcrResults(serializePath);
-
-            return true;
+            return long.Parse(prefix);
         }
+
+        public async static Task<RecordingResult> ProcessAndPersistScreenshot(Bitmap screen)
+        {
+            double scaleFactor = 1;
+            byte[] jpegEncodedImage = Utils.SerializeBitmapToJpeg(screen);
+            var results = await OcrUtils.GetOcrResults(jpegEncodedImage, scaleFactor);
+            long id = Persist(jpegEncodedImage, results);
+            RecordingResult r = new RecordingResult();
+            r.Id = id;
+            r.JpegImage = jpegEncodedImage;
+            r.Results = results;
+            return r;
+        }
+            
 
         public static void SerializeOcrResults(OcrResults results, string path)
         {
