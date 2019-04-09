@@ -81,7 +81,6 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="AdaptiveCardHelper.cs" />
-    <Compile Include="Azure\AzureBlobHelper.cs" />
     <Compile Include="BitmapProvider\CachedBitmapProvider.cs" />
     <Compile Include="KeyUtils.cs" />
     <Compile Include="Recording.cs" />
@@ -115,6 +114,7 @@
       <DependentUpon>Screenshot.xaml</DependentUpon>
     </Compile>
     <Compile Include="Timeline.cs" />
+    <Compile Include="TimelineTest.cs" />
     <Compile Include="Utils.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
@@ -165,6 +165,8 @@
     </Content>
     <Resource Include="NextSteps.txt" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Azure\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

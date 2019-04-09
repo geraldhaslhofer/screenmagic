@@ -15,7 +15,6 @@ namespace ScreenMagic
         public OcrResults Results;
         public Bitmap BitmapImage;
         public byte[] JpegImage;
-        public string CloudPath;
     }
     class Recording
     {
@@ -55,7 +54,10 @@ namespace ScreenMagic
 
 
         }
-        public static void Persist(byte[] jpegEncodedImage, OcrResults results, out long id, out string cloudPath)
+
+      
+
+        public static void Persist(byte[] jpegEncodedImage, OcrResults results, out long id)
         {   
             string prefix = GetUniqueFileNamePrefix();
             string filenameImage = prefix + ".jpeg";
@@ -65,16 +67,12 @@ namespace ScreenMagic
             FileStream f = new FileStream(filename, FileMode.CreateNew);
             f.Write(jpegEncodedImage, 0, jpegEncodedImage.Count());
             f.Close();
-
-            //Persist jpg in the cloud
-            cloudPath = AzuerBlobHelper.UploadFile(jpegEncodedImage, filenameImage).GetAwaiter().GetResult();
-
+            
             //Persist text locally
             string serializePath = Path.Combine(GetWorkingDir(), prefix + ".json");
             SerializeOcrResults(results, Path.Combine(serializePath));
 
             id = long.Parse(prefix);
-           
         }
 
         public async static Task<RecordingResult> ProcessAndPersistScreenshot(Bitmap screen)
@@ -84,14 +82,13 @@ namespace ScreenMagic
             var results = await OcrUtils.GetOcrResults(jpegEncodedImage, scaleFactor);
 
             long id;
-            string cloudPath;
-
-            Persist(jpegEncodedImage, results, out id, out cloudPath);
+            
+            Persist(jpegEncodedImage, results, out id);
             RecordingResult r = new RecordingResult();
             r.Id = id;
             r.JpegImage = jpegEncodedImage;
             r.Results = results;
-            r.CloudPath = cloudPath;
+            
             return r;
         }
             

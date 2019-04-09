@@ -15,6 +15,8 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Windows.Graphics.Display;
+using Windows.ApplicationModel.UserActivities;
+using System.Threading;
 
 namespace ScreenMagic
 {
@@ -37,6 +39,7 @@ namespace ScreenMagic
         private System.Windows.Forms.MenuItem menuItem1;
         private System.Windows.Forms.MenuItem menuItem2;
         private System.Windows.Forms.MenuItem menuItem3;
+        private System.Windows.Forms.MenuItem menuItem4;
 
 
         private Dictionary<string, System.Drawing.Icon> _iconHandles = null;
@@ -58,14 +61,15 @@ namespace ScreenMagic
         private bool _isRecording = false;
 
         public double _scale = 1;
+
         
-        public MainWindow()
+
+        private void SetupUx()
         {
-
-            AzuerBlobHelper.Setup();
-
             ///--------------------------------------------------------------------------------------------------------------------------------------------------
             //Setup notifications icons
+            ///--------------------------------------------------------------------------------------------------------------------------------------------------
+
 
             _iconHandles = new Dictionary<string, System.Drawing.Icon>();
 
@@ -87,7 +91,7 @@ namespace ScreenMagic
             this.menuItem1 = new System.Windows.Forms.MenuItem();
             this.menuItem2 = new System.Windows.Forms.MenuItem();
             this.menuItem3 = new System.Windows.Forms.MenuItem();
-
+            this.menuItem4 = new System.Windows.Forms.MenuItem();
 
             // Initialize menuItem1
             this.menuItem1.Index = 0;
@@ -102,18 +106,40 @@ namespace ScreenMagic
             this.menuItem3.Text = "S&top recording";
             this.menuItem3.Click += new System.EventHandler(this.menuItem3_Click);
 
+            this.menuItem4.Index = 3;
+            this.menuItem4.Text = "&Experimental";
+            this.menuItem4.Click += new System.EventHandler(this.menuItem4_Click);
+
 
             // Initialize contextMenus
             this.contextMenu.MenuItems.AddRange(
-                        new System.Windows.Forms.MenuItem[] { this.menuItem1, this.menuItem2, this.menuItem3 });
+                        new System.Windows.Forms.MenuItem[] { this.menuItem1, this.menuItem2, this.menuItem3, this.menuItem4 });
 
 
             this.notifyIcon.ContextMenu = contextMenu;
+        }
 
-            // Recording
+        private void SetRecordingUx()
+        {
+            if (_isRecording)
+            {
+                menuItem2.Enabled = false; //Recording is now disabled
+                menuItem3.Enabled = true;
+            }
+            else
+            {
+                menuItem2.Enabled = true; //Recording is now disabled
+                menuItem3.Enabled = false;
+            }
+        }
+
+
+        public MainWindow()
+        {
             _isRecording = false;
-            SetRecordingUx();
 
+            SetupUx();
+            SetRecordingUx();
             _timerRecord.Elapsed += _timerRecord_Elapsed;
             Recording.EnsureWorkingDirectory();
             
@@ -130,31 +156,10 @@ namespace ScreenMagic
 
             _ux = new Screenshot(this);
             
-            
             SetWindowState(AppVisualState.Minimized);
 
             _timer.Elapsed += Timer_Elapsed;
             _timer.Enabled = true;
-
-            //Have we been protocol launched?
-
-            string[] args = Environment.GetCommandLineArgs();
-        
-            if (args != null && args.Count() > 1)
-            {
-                string launchArg = args[1];
-
-                //System.Windows.Forms.MessageBox.Show("launcharg!" + args[1]);
-                long id = Timeline.GetIdFromUri(launchArg);
-                if (id > 0)
-                {
-                    //System.Windows.Forms.MessageBox.Show("show!" + id.ToString());
-                    _bitmapProvider = new CachedBitmapProvider(id);
-                    UpdateCached();
-
-                }
-            }
-            
         }
 
         private async void _timerRecord_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
@@ -168,19 +173,7 @@ namespace ScreenMagic
             }
         }
 
-        private void SetRecordingUx()
-        {
-            if (_isRecording)
-            {
-                menuItem2.Enabled = false; //Recording is now disabled
-                menuItem3.Enabled = true;
-            }
-            else
-            {
-                menuItem2.Enabled = true; //Recording is now disabled
-                menuItem3.Enabled = false;
-            }
-        }
+      
 
         private void Timer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
@@ -209,15 +202,13 @@ namespace ScreenMagic
 
         private async void notifyIcon_Click(object sender, EventArgs e)
         {
-            byte[] content = new byte[100];
-        
+           
             //Persist image to disk
             var screen = _bitmapProvider.CaptureScreenshot();
-            var res = await Recording.ProcessAndPersistScreenshot(screen);
+            var res = await Recording.ProcessAndPersistScreenshot(screen).ConfigureAwait(true);
             string text = res.Results.GetRawText();
 
-            //Add activity to timeline 
-            Timeline.GenerateActivityAsync(res.Id, text.Substring(0,20), text, res.CloudPath);
+           
         }
         private void notifyIcon_DoubleClick(object sender, EventArgs e)
         {
@@ -237,7 +228,6 @@ namespace ScreenMagic
             _isRecording = true;
             SetRecordingUx();
             _timerRecord.Enabled = true;
-            
         }
 
         //Stop recording
@@ -246,6 +236,10 @@ namespace ScreenMagic
             _isRecording = false;
             _timer.Enabled = false;
             SetRecordingUx();
+        }
+        //Stop recording
+        private async void menuItem4_Click(object Sender, EventArgs e)
+        {
             
         }
 
@@ -281,8 +275,6 @@ namespace ScreenMagic
                 
             }
         }
-
-      
         
         private void AppSelection_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -302,119 +294,21 @@ namespace ScreenMagic
             }
 
         }
-        //private void MainImage_MouseDown(object sender, MouseButtonEventArgs e)
-        //{
-        //    var clickPos = e.GetPosition(MainImage);
-
-        //    //Figure out position
-        //    ImageSource imageSource = MainImage.Source;
-        //    RenderTargetBitmap bitmapImage = (RenderTargetBitmap)imageSource;
-        //    var pixelMousePositionX = e.GetPosition(MainImage).X * bitmapImage.PixelWidth / MainImage.Width;
-        //    var pixelMousePositionY = e.GetPosition(MainImage).Y * bitmapImage.PixelHeight / MainImage.Height;
-
-        //    System.Diagnostics.Debug.WriteLine(clickPos.ToString() + " " + pixelMousePositionX.ToString() + " "+ pixelMousePositionY.ToString());
-
-            
-        //    var textResults = _lastOcrResults.GetOcrResultFromCoordinate((int)clickPos.X, (int)clickPos.Y);
-
-        //    string textToCopy = string.Empty;
-
-        //    if (textResults == null)
-        //    {
-        //        // try outer bounding box
-
-        //        var smallestBox  = _lastOcrResults.GetSmallestBoundingBox((int)clickPos.X, (int)clickPos.Y);
-        //        if (smallestBox != null)
-        //        {
-        //            var allOcrResults = _lastOcrResults.GetOcrResultFromBoundingbox(smallestBox);
-        //            if (allOcrResults != null && allOcrResults.Count > 0)
-        //            {
-        //                StringBuilder b = new StringBuilder();
-        //                foreach (var aRes in allOcrResults)
-        //                {
-        //                    b.Append(aRes.Text);
-        //                    b.Append(" ");
-        //                }
-        //                textToCopy = b.ToString();
-        //            }
-        //        }
-
-        //    }
-        //    else { 
-        //        textToCopy = textResults.Text;             
-        //    }
-
-        //    CopyText.Content = textToCopy;
-        //    Utils.SetClipboardText(textToCopy);
-        //    System.Diagnostics.Debug.WriteLine(textToCopy);
-        //}
-
-        //private void MainWindow_StateChanged(object sender, EventArgs e)
-        //{
-        //    if (this.WindowState == WindowState.Minimized)
-        //    {
-        //        SetWindowState(AppVisualState.Minimized);
-        //    }
-        //    else if (this.WindowState == WindowState.Normal)
-        //    {
-        //        Update();
-        //        SetWindowState(AppVisualState.WithScreenshot);
-        //    }
-        //}
-        //private void UpdateLayoutElements()
-        //{
-        //    //MainImage.Height = this.Height - 20;
-        //    //MainImage.Width = this.Width - 20;
-        //}
-        //private void MainWindow_SizeChanged(object sender, SizeChangedEventArgs e)
-        //{
-        //    UpdateLayoutElements();
-        //}
-
-        private void Execute_Click(object sender, RoutedEventArgs e)
+   
+        private  async void Execute_Click(object sender, RoutedEventArgs e)
         {
-            //if (_isActive)
-            //{
-            //    //stop 
-            //    _isActive = false;
-            //    _timer.Stop();
-            //    Execute.Content = "Start";
-            //}
-            //else
-            //{
-            //    _isActive = true;
-            //    _timer.Start();
-            //    Execute.Content = "Stop";
-
-            //}
-
-            //Utils.Activate();
-            //System.Threading.Thread.Sleep(500);
             Update();
-
             SetWindowState(AppVisualState.WithScreenshot);
-
-            //... and reposition
-            //RECT r = Utils.GetWindowRect(Modes.WindowToWatch);
-            //Utils.ChangePos(Utils.GetMainWindowsHandle(), r);
-            //_timer.Start();
+            
         }
-
-        //private void _timer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
-        //{
-        //    //Application.Current.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal,
-        //         new Action(() => this.Update()));
-        //}
-
-
+        
         private async void UpdateCached()
         {
             var screen = _bitmapProvider.CaptureScreenshot();
 
             var imageSourceOrig = Utils.ImageSourceForBitmap(screen);
             var imageSource = RenderUtils.ScaleImage(imageSourceOrig, 1);
-
-
+            
             //Render before we try to do OCR 
 
             _ux.SetImage(RenderUtils.DrawOriginalBmps(imageSource, null));
@@ -425,8 +319,6 @@ namespace ScreenMagic
 
             var results = await OcrUtils.GetOcrResults(jpegEncodedImage, 1);
             _lastOcrResults = results;
-
-
             _ux.SetImage(RenderUtils.DrawOriginalBmps(imageSource, results));
             
         }
@@ -462,24 +354,6 @@ namespace ScreenMagic
             }
         }
 
-        private void OCR_Click(object sender, RoutedEventArgs e)
-        {
-            //var result = OcrUtils.CatpureImage(@"C:\Users\gerhas\Desktop\tes.jpg");
-        }
-
-        private void Test_Click(object sender, RoutedEventArgs e)
-        {
-            
-
-            //RECT r = Utils.GetWindowRect(Modes.WindowToWatch);
-            
-            //Utils.ChangePos(Utils.GetMainWindowsHandle(), r);
-        }
-
-        private void Exit_Click(object sender, RoutedEventArgs e)
-        {
-            SetWindowState(AppVisualState.Minimized);
-
-        }
+      
     }
 }
