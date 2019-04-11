@@ -205,7 +205,7 @@ namespace ScreenMagic
            
             //Persist image to disk
             var screen = _bitmapProvider.CaptureScreenshot();
-            var res = await Recording.ProcessAndPersistScreenshot(screen).ConfigureAwait(true);
+            var res = await Recording.ProcessAndPersistScreenshot(screen);
             string text = res.Results.GetRawText();
 
            

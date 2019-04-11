@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScreenMagic", "ScreenMagic\
 EndProject
 Project("{C7167F0D-BC9F-4E6E-AFE1-012C56B48DB5}") = "ScreenMagicUwp", "ScreenMagicUwp\ScreenMagicUwp.wapproj", "{ABBC55F8-5DAF-4608-BCBF-09D85B9FB953}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestDevApp", "TestDevApp\TestDevApp.csproj", "{176A8E17-40D4-4458-8114-E3B8FD047868}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -47,6 +49,18 @@ Global
 		{ABBC55F8-5DAF-4608-BCBF-09D85B9FB953}.Release|x86.ActiveCfg = Release|x86
 		{ABBC55F8-5DAF-4608-BCBF-09D85B9FB953}.Release|x86.Build.0 = Release|x86
 		{ABBC55F8-5DAF-4608-BCBF-09D85B9FB953}.Release|x86.Deploy.0 = Release|x86
+		{176A8E17-40D4-4458-8114-E3B8FD047868}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{176A8E17-40D4-4458-8114-E3B8FD047868}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{176A8E17-40D4-4458-8114-E3B8FD047868}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{176A8E17-40D4-4458-8114-E3B8FD047868}.Debug|x64.Build.0 = Debug|Any CPU
+		{176A8E17-40D4-4458-8114-E3B8FD047868}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{176A8E17-40D4-4458-8114-E3B8FD047868}.Debug|x86.Build.0 = Debug|Any CPU
+		{176A8E17-40D4-4458-8114-E3B8FD047868}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{176A8E17-40D4-4458-8114-E3B8FD047868}.Release|Any CPU.Build.0 = Release|Any CPU
+		{176A8E17-40D4-4458-8114-E3B8FD047868}.Release|x64.ActiveCfg = Release|Any CPU
+		{176A8E17-40D4-4458-8114-E3B8FD047868}.Release|x64.Build.0 = Release|Any CPU
+		{176A8E17-40D4-4458-8114-E3B8FD047868}.Release|x86.ActiveCfg = Release|Any CPU
+		{176A8E17-40D4-4458-8114-E3B8FD047868}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

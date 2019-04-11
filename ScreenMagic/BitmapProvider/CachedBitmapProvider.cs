@@ -16,7 +16,7 @@
 //        }
 //        Bitmap IBitmapProvider.CaptureScreenshot()
 //        {
-//            byte[] jpeg;
+//            byte[] jpeg; 
 //            OcrResults r;
 //            Recording.Retrieve(_id, out jpeg, out r);
 
