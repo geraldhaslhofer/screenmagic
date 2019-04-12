@@ -23,11 +23,51 @@ namespace GlobalUtils
             }
             
         }
-        public static Bitmap CaptureScreen(Screen screen, double scaleFactor)
+
+        public static Bitmap CaptureScreenFromRectPhysical(Screen screen, Rectangle rPhysical)
         {
             //"Screen" does not show the physical size, but rather the logical size
 
+            Rectangle destRect = MonitorInfo.GetPhysicalRectangleFromScreen(screen);
 
+            //Create destionation bitmap
+            Bitmap finalBitmap = new Bitmap(rPhysical.Width, rPhysical.Height);
+
+            // Get a graphics object for the composite bitmap and initialize it...
+            Graphics g = Graphics.FromImage(finalBitmap);
+            IntPtr hdcDestination = g.GetHdc();
+            
+            IntPtr hdcSource = LowLevelUtils.CreateDC(
+                IntPtr.Zero,
+                screen.DeviceName,
+                IntPtr.Zero,
+                IntPtr.Zero);
+
+            bool success = LowLevelUtils.StretchBlt(
+                hdcDestination,
+                0,
+                0,
+                rPhysical.Width,
+                rPhysical.Height,
+                hdcSource,
+                rPhysical.X, rPhysical.Y, rPhysical.Width, rPhysical.Height,
+                (int)TernaryRasterOperations.SRCCOPY);
+
+            LowLevelUtils.DeleteDC(hdcSource);
+
+            // Cleanup destination HDC and Graphics...
+            g.ReleaseHdc(hdcDestination);
+            g.Dispose();
+
+            finalBitmap.Save(@"C:\Users\gerhas\Desktop\test\" + Guid.NewGuid().ToString() + ".jpg", System.Drawing.Imaging.ImageFormat.Jpeg);
+
+            return finalBitmap;
+        }
+
+        public static Bitmap CaptureScreen(Screen screen, double scaleFactor)
+        {
+            //"Screen" does not show the physical size, but rather the logical size
+            
             Rectangle destRect = MonitorInfo.GetPhysicalRectangleFromScreen(screen);
 
             //Create destionation bitmap

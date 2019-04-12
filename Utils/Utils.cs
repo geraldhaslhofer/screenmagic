@@ -10,6 +10,11 @@ namespace GlobalUtils
 {
     public class Utils
     {
+        public static Bitmap CaptureScreenFromRectPhysical(Screen screen, Rectangle rPhysical)
+        {
+            return ScreenGrab.CaptureScreenFromRectPhysical(screen, rPhysical);
+        }
+
         //Return the full bitmap 
         public static Bitmap GetBitmapForScreen(Screen screen)
         {

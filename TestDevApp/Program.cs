@@ -17,12 +17,13 @@ namespace TestDevApp
             var YP = GlobalUtils.Utils.GetYourPhoneWindow();
 
             Screen s;
-            Rectangle r;
+            Rectangle rPhysical;
 
-            GlobalUtils.Utils.LocateProcessWindowRelativePhysical(YP.Handle, out s, out r);
+            GlobalUtils.Utils.LocateProcessWindowRelativePhysical(YP.Handle, out s, out rPhysical);
+            GlobalUtils.Utils.CaptureScreenFromRectPhysical(s, rPhysical);
 
             //var r = MonitorInfo.GetWindowRect(YP.Handle);
-            
+
 
 
 
