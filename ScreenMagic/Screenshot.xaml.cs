@@ -84,7 +84,7 @@ namespace ScreenMagic
             selection.Height= Math.Abs(_endSelection.Y - _startSelection.Y);
 
             System.Drawing.Rectangle relativeLogicalScreen = GlobalUtils.MonitorHelper.GetRelativeRectangle(_ctx.CapturedWindowLogical, selection);
-            //System.Drawing.Rectangle relativeLogicalWindow = GlobalUtils.MonitorHelper.GetRelativeRectangle(_ctx.CapturedWindowLogical, relativeLogicalScreen);
+            
             //Now scale to physical 
             System.Drawing.Rectangle relativePhysical = GlobalUtils.MonitorHelper.ScaleRect(relativeLogicalScreen, _ctx.ScaleFactor);
             return relativePhysical;
