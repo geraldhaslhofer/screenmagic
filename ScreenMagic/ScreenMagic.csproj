@@ -81,7 +81,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="AdaptiveCardHelper.cs" />
-    <Compile Include="BitmapProvider\CachedBitmapProvider.cs" />
+    <Compile Include="BitmapProvider\OptimizedScreenShotProvider.cs" />
     <Compile Include="KeyUtils.cs" />
     <Compile Include="Recording.cs" />
     <Compile Include="ScreenUtils\LowLevelUtils.cs" />
@@ -96,7 +96,6 @@
     </Compile>
     <Compile Include="BitmapProvider\AppScreenshotProvider.cs" />
     <Compile Include="BitmapProvider\BitmapProviderFactory.cs" />
-    <Compile Include="BitmapProvider\PrintScreenProvider.cs" />
     <Compile Include="BitmapProvider\TestStubScreenshotProvider.cs" />
     <Compile Include="Config.cs" />
     <Compile Include="OcrEdge.cs" />
@@ -167,6 +166,12 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Azure\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Utils\GlobalUtils.csproj">
+      <Project>{c3d3758a-c2a5-4a5d-94d5-f26e4eaaa2d7}</Project>
+      <Name>GlobalUtils</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

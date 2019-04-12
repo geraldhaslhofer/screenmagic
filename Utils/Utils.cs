@@ -10,6 +10,16 @@ namespace GlobalUtils
 {
     public class Utils
     {
+        public static Rectangle ScaleRect(Rectangle r, double scale)
+        {
+            return MonitorInfo.ScaleRect(r, scale);
+        }
+
+        public static double GetScaleFactorForScreen(Screen screen)
+        {
+            return MonitorInfo.GetScaleFactorForScreen(screen);
+        }
+
         public static Bitmap CaptureScreenFromRectPhysical(Screen screen, Rectangle rPhysical)
         {
             return ScreenGrab.CaptureScreenFromRectPhysical(screen, rPhysical);

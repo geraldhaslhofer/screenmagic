@@ -15,5 +15,6 @@ namespace ScreenMagic
     interface IBitmapProvider
     {
         Bitmap CaptureScreenshot();
+        double ScaleFactor();
     }
 }

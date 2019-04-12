@@ -311,7 +311,7 @@ namespace ScreenMagic
             
             //Render before we try to do OCR 
 
-            _ux.SetImage(RenderUtils.DrawOriginalBmps(imageSource, null));
+            _ux.SetImage(RenderUtils.DrawOriginalBmps(imageSource, null), _bitmapProvider.ScaleFactor());
 
             //Scale
 
@@ -319,7 +319,7 @@ namespace ScreenMagic
 
             var results = await OcrUtils.GetOcrResults(jpegEncodedImage, 1);
             _lastOcrResults = results;
-            _ux.SetImage(RenderUtils.DrawOriginalBmps(imageSource, results));
+            _ux.SetImage(RenderUtils.DrawOriginalBmps(imageSource, results), _bitmapProvider.ScaleFactor());
             
         }
 
@@ -327,30 +327,25 @@ namespace ScreenMagic
         {
             if (Config.WindowToWatch != IntPtr.Zero)
             {
-
-                //Figure out what to update, and at what resolution
-                double scaleFactor = 1;/// _scale;
-
-
                 var screen = _bitmapProvider.CaptureScreenshot();
 
                 var imageSourceOrig = Utils.ImageSourceForBitmap(screen);
-                var imageSource = RenderUtils.ScaleImage(imageSourceOrig, scaleFactor);
+                //var imageSource = RenderUtils.ScaleImage(imageSourceOrig, scaleFactor);
 
 
                 //Render before we try to do OCR 
                 
-                _ux.SetImage(RenderUtils.DrawOriginalBmps(imageSource, null));
+                _ux.SetImage(RenderUtils.DrawOriginalBmps(imageSourceOrig, null), _bitmapProvider.ScaleFactor());
 
                 //Scale
 
                 byte[] jpegEncodedImage = Utils.SerializeBitmapToJpeg(screen);
 
-                var results = await OcrUtils.GetOcrResults(jpegEncodedImage, scaleFactor);
+                var results = await OcrUtils.GetOcrResults(jpegEncodedImage, 1);
                 _lastOcrResults = results;
 
                 
-                _ux.SetImage(RenderUtils.DrawOriginalBmps(imageSource, results));
+                _ux.SetImage(RenderUtils.DrawOriginalBmps(imageSourceOrig, results), _bitmapProvider.ScaleFactor());
             }
         }
 

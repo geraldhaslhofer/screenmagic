@@ -28,6 +28,7 @@ namespace ScreenMagic
         Point _startSelection = new Point();
         Point _endSelection = new Point();
         BitmapSource _originalBitmap = null;
+        double _scaleFactor;
 
         //Animation timer to have Window disappear after text has been copied
         System.Timers.Timer _timer = new System.Timers.Timer(2000);
@@ -87,7 +88,16 @@ namespace ScreenMagic
                 _isMouseDrag = false;
                 Debug.WriteLine("Completed selection from: " + _startSelection.ToString() + " end: " + _endSelection.ToString());
 
-                string copiedText = GetTextFromScreenRect(_startSelection, _endSelection);
+                System.Drawing.Rectangle selectionLogical = new System.Drawing.Rectangle((int)Math.Min(_startSelection.X, _endSelection.X),
+                                                                                         (int)Math.Min(_startSelection.Y, _endSelection.Y),
+                                                                                         (int)Math.Abs(_endSelection.X - _startSelection.X),
+                                                                                         (int)Math.Abs(_endSelection.Y - _startSelection.Y));
+
+
+                //Scale to physical dimension of image
+                System.Drawing.Rectangle selectionPhysical = GlobalUtils.Utils.ScaleRect(selectionLogical, _scaleFactor);
+
+                string copiedText = GetTextFromScreenRect(selectionPhysical);
                 MainImage.Source = null;
 
                 StatusMessageInternal.Text= "Copied text to clipboard" + 
@@ -119,22 +129,23 @@ namespace ScreenMagic
             Debug.WriteLine("LeftMouseDown");
         }
 
-        public void SetImage(BitmapSource img)
+        public void SetImage(BitmapSource img, double scaleFactor)
         {
+            _scaleFactor = scaleFactor;
             _originalBitmap = img;
             MainImage.Source = _originalBitmap;
         }
 
-        private string GetTextFromScreenRect(Point p1, Point p2)
+        private string GetTextFromScreenRect(System.Drawing.Rectangle r)
         {
-            Point p1_translated = TranslateScreenPosToImagePos(p1);
-            Point p2_translated = TranslateScreenPosToImagePos(p2);
+            //Point p1_translated = TranslateScreenPosToImagePos(p1);
+            //Point p2_translated = TranslateScreenPosToImagePos(p2);
             BoundingBox b = new BoundingBox();
-            b.X = (int)(Math.Min(p1_translated.X, p2_translated.X));
-            b.Y = (int)(Math.Min(p1_translated.Y, p2_translated.Y));
-            b.Width = (int)(Math.Abs(p2_translated.X - p1_translated.X));
-            b.Height= (int)(Math.Abs(p2_translated.Y - p1_translated.Y));
-
+            b.X = r.X;
+            b.Y = r.Y;
+            b.Width = r.Width;
+            b.Height = r.Height;
+            
             var allOcrResults = _mainWindow._lastOcrResults.GetOcrResultFromBoundingbox(b);
             if (allOcrResults != null && allOcrResults.Count > 0)
             {

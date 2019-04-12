@@ -17,7 +17,7 @@ namespace ScreenMagic
             }
             else
             {
-                return new PrintScreenProvider();
+                return new OptimizedScreenShotProvider();
             }
         }
     }

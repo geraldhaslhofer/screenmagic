@@ -18,7 +18,10 @@ namespace ScreenMagic
 
             
         }
+        double IBitmapProvider.ScaleFactor()
+        {
+            return 1;
+        }
 
-        
     }
 }
