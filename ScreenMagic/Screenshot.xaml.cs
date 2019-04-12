@@ -25,10 +25,11 @@ namespace ScreenMagic
 
         // Interaction states
         bool _isMouseDrag = false;
-        Point _startSelection = new Point();
-        Point _endSelection = new Point();
+        System.Drawing.Point _startSelection = new System.Drawing.Point();
+        System.Drawing.Point _endSelection = new System.Drawing.Point();
+
         BitmapSource _originalBitmap = null;
-        double _scaleFactor;
+        CaptureContext _ctx = null;
 
         //Animation timer to have Window disappear after text has been copied
         System.Timers.Timer _timer = new System.Timers.Timer(2000);
@@ -60,49 +61,82 @@ namespace ScreenMagic
 
         }
 
+        //-----------------------------------------------------------------------------------------------
+        // Mouse movement during selection
+        //-----------------------------------------------------------------------------------------------
+
+        private void MainImage_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            //Start selection
+            _isMouseDrag = true;
+
+            //Remember starting position
+            _startSelection = System.Windows.Forms.Cursor.Position;
+            Debug.WriteLine("LeftMouseDown");
+        }
+
+        private System.Drawing.Rectangle GetSelectionPhysicalRelative()
+        {
+            System.Drawing.Rectangle selection = new System.Drawing.Rectangle();
+            selection.X = Math.Min(_startSelection.X, _endSelection.X);
+            selection.Y = Math.Min(_startSelection.Y, _startSelection.Y);
+            selection.Width = Math.Abs(_endSelection.X - _startSelection.X);
+            selection.Height= Math.Abs(_endSelection.Y - _startSelection.Y);
+
+            System.Drawing.Rectangle relativeLogicalScreen = GlobalUtils.MonitorHelper.GetRelativeRectangle(_ctx.CapturedWindowLogical, selection);
+            //System.Drawing.Rectangle relativeLogicalWindow = GlobalUtils.MonitorHelper.GetRelativeRectangle(_ctx.CapturedWindowLogical, relativeLogicalScreen);
+            //Now scale to physical 
+            System.Drawing.Rectangle relativePhysical = GlobalUtils.MonitorHelper.ScaleRect(relativeLogicalScreen, _ctx.ScaleFactor);
+            return relativePhysical;
+
+        }
+
         private void MainImage_MouseMove(object sender, MouseEventArgs e)
         {
             if (_isMouseDrag)
             {
-                _endSelection = e.GetPosition(MainImage);
+                _endSelection = System.Windows.Forms.Cursor.Position;
                 //Create bitmap with the selected rectangle
-                var imageWithRect = RenderUtils.DrawSelectionRectangle(_originalBitmap, _startSelection, _endSelection);
+
+                //Translate the absolute logical coordinate into the relative physical coordinate on the screen
+
+                System.Drawing.Rectangle selection = GetSelectionPhysicalRelative();
+
+                var imageWithRect = GlobalUtils.BitmapManipulation.DrawSelectionRectangle(_originalBitmap, selection);
+                //var imageWithRect = RenderUtils.DrawSelectionRectangle(_originalBitmap, _startSelection, _endSelection);
                 MainImage.Source = imageWithRect;
                 Debug.WriteLine("MouseMove");
             }
-        }
-
-        private void HideWindow()
-        {
-            MainImage.Source = null;
-            StatusMessageInternal.Text= String.Empty;
-            this.Hide();
         }
 
         private void MainImage_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
             if (_isMouseDrag)
             {
+                var p = System.Windows.Forms.Cursor.Position;
                 //Completed a selection, now copy to clipboard
-                _endSelection = e.GetPosition(MainImage);
+                _endSelection = System.Windows.Forms.Cursor.Position;
                 _isMouseDrag = false;
                 Debug.WriteLine("Completed selection from: " + _startSelection.ToString() + " end: " + _endSelection.ToString());
 
-                System.Drawing.Rectangle selectionLogical = new System.Drawing.Rectangle((int)Math.Min(_startSelection.X, _endSelection.X),
-                                                                                         (int)Math.Min(_startSelection.Y, _endSelection.Y),
-                                                                                         (int)Math.Abs(_endSelection.X - _startSelection.X),
-                                                                                         (int)Math.Abs(_endSelection.Y - _startSelection.Y));
+                //System.Drawing.Rectangle selectionLogical = new System.Drawing.Rectangle((int)Math.Min(_startSelection.X, _endSelection.X),
+                //                                                                         (int)Math.Min(_startSelection.Y, _endSelection.Y),
+                //                                                                         (int)Math.Abs(_endSelection.X - _startSelection.X),
+                //                                                                         (int)Math.Abs(_endSelection.Y - _startSelection.Y));
 
 
                 //Scale to physical dimension of image
-                System.Drawing.Rectangle selectionPhysical = GlobalUtils.Utils.ScaleRect(selectionLogical, _scaleFactor);
+
+                
+
+                System.Drawing.Rectangle selectionPhysical = GetSelectionPhysicalRelative(); 
 
                 string copiedText = GetTextFromScreenRect(selectionPhysical);
                 MainImage.Source = null;
 
-                StatusMessageInternal.Text= "Copied text to clipboard" + 
+                StatusMessageInternal.Text = "Copied text to clipboard" +
                     Environment.NewLine +
-                    Environment.NewLine + 
+                    Environment.NewLine +
                     copiedText;
 
                 Utils.SetClipboardText(copiedText);
@@ -117,21 +151,23 @@ namespace ScreenMagic
 
                 //Render original image
             }
-            
+
         }
 
-        private void MainImage_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+
+        private void HideWindow()
         {
-            //Start selection
-            _isMouseDrag = true;
-            //Remember starting position
-            _startSelection = e.GetPosition(MainImage);
-            Debug.WriteLine("LeftMouseDown");
+            MainImage.Source = null;
+            StatusMessageInternal.Text= String.Empty;
+            this.Hide();
         }
 
-        public void SetImage(BitmapSource img, double scaleFactor)
+       
+        
+
+        public void SetImage(BitmapSource img, CaptureContext ctx)
         {
-            _scaleFactor = scaleFactor;
+            _ctx = ctx;
             _originalBitmap = img;
             MainImage.Source = _originalBitmap;
         }

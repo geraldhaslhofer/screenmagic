@@ -10,17 +10,32 @@ namespace ScreenMagic
 {
     class OptimizedScreenShotProvider : IBitmapProvider
     {
-        private Screen _lastCapturedScreen;
+        
 
-        Bitmap IBitmapProvider.CaptureScreenshot()
+        void IBitmapProvider.CaptureScreenshot(out Bitmap bitmap, out CaptureContext captureContext)
         {
-            Rectangle rPhysical;
-            GlobalUtils.Utils.LocateProcessWindowRelativePhysical(Config.WindowToWatch, out _lastCapturedScreen, out rPhysical);
-            return GlobalUtils.Utils.CaptureScreenFromRectPhysical(_lastCapturedScreen, rPhysical);
+            CaptureContext context = new CaptureContext();
+
+            Screen lastCapturedScreen;
+            Rectangle windowAbsoluteLogical;
+            Rectangle windowRelativeLogical;
+            Rectangle windowRelativePhysical;
+            double scaleFactor;
+
+            //public static void LocateProcessWindowRelativePhysical(IntPtr handle, out Screen screen, out Rectangle windowAbsoluteLogical, out Rectangle windowRelativeLogical, out Rectangle windowRelativePhysical, out double scaleFactor)
+
+            GlobalUtils.Utils.LocateProcessWindowRelativePhysical(Config.WindowToWatch, out lastCapturedScreen, out windowAbsoluteLogical, out windowRelativeLogical, out windowRelativePhysical, out scaleFactor);
+            
+            bitmap = GlobalUtils.Utils.CaptureScreenFromRectPhysical(lastCapturedScreen, windowRelativePhysical);
+            context.CapturedOnScreen = lastCapturedScreen;
+            context.CapturedScreenLogical = lastCapturedScreen.Bounds;
+            context.CapturedWindowLogical = windowAbsoluteLogical;
+            context.CapturedWindowPhysicalDimension = windowRelativePhysical;
+            context.ScaleFactor = scaleFactor;
+
+            captureContext = context;
+            
         }
-        double IBitmapProvider.ScaleFactor()
-        {
-            return GlobalUtils.Utils.GetScaleFactorForScreen(_lastCapturedScreen);
-        }
+        
     }
 }

@@ -9,7 +9,7 @@ using System.Runtime.InteropServices;
 
 namespace GlobalUtils
 {
-    class MonitorInfo
+    public class MonitorHelper
     {
 
         //Fiugre out the relative positining of inner within outer

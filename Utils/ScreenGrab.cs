@@ -18,7 +18,7 @@ namespace GlobalUtils
 
             foreach (Screen x in screens)
             {
-                double scale = MonitorInfo.GetScaleFactorForScreen(x);
+                double scale = MonitorHelper.GetScaleFactorForScreen(x);
                 CaptureScreen(x, scale);
             }
             
@@ -28,7 +28,7 @@ namespace GlobalUtils
         {
             //"Screen" does not show the physical size, but rather the logical size
 
-            Rectangle destRect = MonitorInfo.GetPhysicalRectangleFromScreen(screen);
+            Rectangle destRect = MonitorHelper.GetPhysicalRectangleFromScreen(screen);
 
             //Create destionation bitmap
             Bitmap finalBitmap = new Bitmap(rPhysical.Width, rPhysical.Height);
@@ -68,7 +68,7 @@ namespace GlobalUtils
         {
             //"Screen" does not show the physical size, but rather the logical size
             
-            Rectangle destRect = MonitorInfo.GetPhysicalRectangleFromScreen(screen);
+            Rectangle destRect = MonitorHelper.GetPhysicalRectangleFromScreen(screen);
 
             //Create destionation bitmap
             Bitmap finalBitmap = new Bitmap(destRect.Width , destRect.Height);
@@ -139,7 +139,7 @@ namespace GlobalUtils
 
             ////Is there a scale factor to factor in?
             //GetScaleFactorRange(out minScale, out maxScale);
-            //curScale = MonitorInfo.GetScaleFactorForScreen(screen);
+            //curScale = MonitorHelper.GetScaleFactorForScreen(screen);
 
             //double scaleFactor = maxScale / curScale;
             ////current DPI

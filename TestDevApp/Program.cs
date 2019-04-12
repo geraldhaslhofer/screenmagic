@@ -13,21 +13,32 @@ namespace TestDevApp
     {
         static void Main(string[] args)
         {
-            //Figure out where Your Phone is
-            var YP = GlobalUtils.Utils.GetYourPhoneWindow();
+            System.Diagnostics.Debug.WriteLine(System.Windows.Forms.Screen.AllScreens[0].Bounds);
+            System.Diagnostics.Debug.WriteLine(Utils.GetScaleFactorForScreen(Screen.AllScreens[0]));
+            while (true)
+            {
+                System.Diagnostics.Debug.WriteLine(System.Windows.Forms.Cursor.Position);
 
-            Screen s;
-            Rectangle rPhysical;
-
-            GlobalUtils.Utils.LocateProcessWindowRelativePhysical(YP.Handle, out s, out rPhysical);
-            GlobalUtils.Utils.CaptureScreenFromRectPhysical(s, rPhysical);
-
-            //var r = MonitorInfo.GetWindowRect(YP.Handle);
+            }
 
 
+            ////Figure out where Your Phone is
+            //var YP = GlobalUtils.Utils.GetYourPhoneWindow();
+
+            //Screen s;
+            //Rectangle rPhysical;
+
+            ////IntPtr handle, out Screen screen, out Rectangle windowAbsoluteLogical, out Rectangle windowRelativeLogical, out Rectangle windowRelativePhysical, out double scaleFactor
+
+            //GlobalUtils.Utils.LocateProcessWindowRelativePhysical(YP.Handle, out s, out rPhysical);
+            //GlobalUtils.Utils.CaptureScreenFromRectPhysical(s, rPhysical);
+
+            ////var r = MonitorHelper.GetWindowRect(YP.Handle);
 
 
-            //ScreenGrab.CaptureAndSaveAllScreens();
+
+
+            ////ScreenGrab.CaptureAndSaveAllScreens();
         }
     }
 }

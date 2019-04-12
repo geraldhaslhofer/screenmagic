@@ -12,12 +12,12 @@ namespace GlobalUtils
     {
         public static Rectangle ScaleRect(Rectangle r, double scale)
         {
-            return MonitorInfo.ScaleRect(r, scale);
+            return MonitorHelper.ScaleRect(r, scale);
         }
 
         public static double GetScaleFactorForScreen(Screen screen)
         {
-            return MonitorInfo.GetScaleFactorForScreen(screen);
+            return MonitorHelper.GetScaleFactorForScreen(screen);
         }
 
         public static Bitmap CaptureScreenFromRectPhysical(Screen screen, Rectangle rPhysical)
@@ -28,27 +28,28 @@ namespace GlobalUtils
         //Return the full bitmap 
         public static Bitmap GetBitmapForScreen(Screen screen)
         {
-            double scaleFactor = MonitorInfo.GetScaleFactorForScreen(screen);
+            double scaleFactor = MonitorHelper.GetScaleFactorForScreen(screen);
             return ScreenGrab.CaptureScreen(screen, scaleFactor);
         }
 
-        public static void LocateProcessWindowRelativePhysical(IntPtr handle, out Screen screen, out Rectangle windowRelativePhysical)
+        public static void LocateProcessWindowRelativePhysical(IntPtr handle, out Screen screen, out Rectangle windowAbsoluteLogical, out Rectangle windowRelativeLogical, out Rectangle windowRelativePhysical, out double scaleFactor)
         {
             //Determine position in logical coordinate space
-            Rectangle rectLogicalWindow = MonitorInfo.GetWindowRectLogical(handle);
+            windowAbsoluteLogical = MonitorHelper.GetWindowRectLogical(handle);
             //figure out which screen it is on
             //Screen has logical coordinates
-            screen = MonitorInfo.GetScreenForRectLogical(rectLogicalWindow);
+            screen = MonitorHelper.GetScreenForRectLogical(windowAbsoluteLogical);
 
-            Rectangle windowRelativeLogical = MonitorInfo.GetRelativeRectangle(screen.Bounds, rectLogicalWindow);
-            windowRelativePhysical = MonitorInfo.ScaleRect(windowRelativeLogical, MonitorInfo.GetScaleFactorForScreen(screen));
+            windowRelativeLogical = MonitorHelper.GetRelativeRectangle(screen.Bounds, windowAbsoluteLogical);
+            scaleFactor = MonitorHelper.GetScaleFactorForScreen(screen);
+            windowRelativePhysical = MonitorHelper.ScaleRect(windowRelativeLogical, scaleFactor);
         }
 
 
         //Process related Utils
         public static IEnumerable<DesktopWindow> GetActiveWindows()
         {
-            var windows = MonitorInfo.GetDesktopWindows();
+            var windows = MonitorHelper.GetDesktopWindows();
             var visible = from x in windows where x.IsVisible && x.Title.Length > 2 orderby x.Title select x;
             return visible;
         }

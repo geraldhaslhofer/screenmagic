@@ -164,13 +164,15 @@ namespace ScreenMagic
 
         private async void _timerRecord_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
-            _timerRecord.Enabled = false;
-            var screen = _bitmapProvider.CaptureScreenshot();
-            await Recording.ProcessAndPersistScreenshot(screen);
-            if (_isRecording)
-            {
-                _timerRecord.Enabled = true;
-            }
+            throw new NotImplementedException("Todo");
+            //_timerRecord.Enabled = false;
+            //var screen = _bitmapProvider.CaptureScreenshot();
+            
+            //await Recording.ProcessAndPersistScreenshot(screen);
+            //if (_isRecording)
+            //{
+            //    _timerRecord.Enabled = true;
+            //}
         }
 
       
@@ -202,11 +204,11 @@ namespace ScreenMagic
 
         private async void notifyIcon_Click(object sender, EventArgs e)
         {
-           
-            //Persist image to disk
-            var screen = _bitmapProvider.CaptureScreenshot();
-            var res = await Recording.ProcessAndPersistScreenshot(screen);
-            string text = res.Results.GetRawText();
+            //throw new NotImplementedException("Todo");
+            ////Persist image to disk
+            //var screen = _bitmapProvider.CaptureScreenshot();
+            //var res = await Recording.ProcessAndPersistScreenshot(screen);
+            //string text = res.Results.GetRawText();
 
            
         }
@@ -304,22 +306,24 @@ namespace ScreenMagic
         
         private async void UpdateCached()
         {
-            var screen = _bitmapProvider.CaptureScreenshot();
+            throw new NotImplementedException("Todo");
 
-            var imageSourceOrig = Utils.ImageSourceForBitmap(screen);
-            var imageSource = RenderUtils.ScaleImage(imageSourceOrig, 1);
+            //var screen = _bitmapProvider.CaptureScreenshot();
+
+            //var imageSourceOrig = Utils.ImageSourceForBitmap(screen);
+            //var imageSource = RenderUtils.ScaleImage(imageSourceOrig, 1);
             
-            //Render before we try to do OCR 
+            ////Render before we try to do OCR 
 
-            _ux.SetImage(RenderUtils.DrawOriginalBmps(imageSource, null), _bitmapProvider.ScaleFactor());
+            //_ux.SetImage(RenderUtils.DrawOriginalBmps(imageSource, null), _bitmapProvider.ScaleFactor());
 
-            //Scale
+            ////Scale
 
-            byte[] jpegEncodedImage = Utils.SerializeBitmapToJpeg(screen);
+            //byte[] jpegEncodedImage = Utils.SerializeBitmapToJpeg(screen);
 
-            var results = await OcrUtils.GetOcrResults(jpegEncodedImage, 1);
-            _lastOcrResults = results;
-            _ux.SetImage(RenderUtils.DrawOriginalBmps(imageSource, results), _bitmapProvider.ScaleFactor());
+            //var results = await OcrUtils.GetOcrResults(jpegEncodedImage, 1);
+            //_lastOcrResults = results;
+            //_ux.SetImage(RenderUtils.DrawOriginalBmps(imageSource, results), _bitmapProvider.ScaleFactor());
             
         }
 
@@ -327,7 +331,10 @@ namespace ScreenMagic
         {
             if (Config.WindowToWatch != IntPtr.Zero)
             {
-                var screen = _bitmapProvider.CaptureScreenshot();
+                CaptureContext ctx;
+                Bitmap screen;
+
+                _bitmapProvider.CaptureScreenshot(out screen, out ctx);
 
                 var imageSourceOrig = Utils.ImageSourceForBitmap(screen);
                 //var imageSource = RenderUtils.ScaleImage(imageSourceOrig, scaleFactor);
@@ -335,7 +342,7 @@ namespace ScreenMagic
 
                 //Render before we try to do OCR 
                 
-                _ux.SetImage(RenderUtils.DrawOriginalBmps(imageSourceOrig, null), _bitmapProvider.ScaleFactor());
+                _ux.SetImage(RenderUtils.DrawOriginalBmps(imageSourceOrig, null), ctx);
 
                 //Scale
 
@@ -343,9 +350,8 @@ namespace ScreenMagic
 
                 var results = await OcrUtils.GetOcrResults(jpegEncodedImage, 1);
                 _lastOcrResults = results;
-
                 
-                _ux.SetImage(RenderUtils.DrawOriginalBmps(imageSourceOrig, results), _bitmapProvider.ScaleFactor());
+                _ux.SetImage(RenderUtils.DrawOriginalBmps(imageSourceOrig, results), ctx);
             }
         }
 

@@ -13,7 +13,8 @@ namespace ScreenMagic
         {
             if (Config.IsTestBitmapProvider()) 
             {
-                return new TestStubScreenshotProvider();
+                //return new TestStubScreenshotProvider();
+                throw new NotImplementedException("No test provider");
             }
             else
             {
