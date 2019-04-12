@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using GlobalUtils;
+using System.Windows.Forms;
+using System.Drawing;
 
 namespace TestDevApp
 {
@@ -10,7 +13,20 @@ namespace TestDevApp
     {
         static void Main(string[] args)
         {
-            ScreenGrab.CaptureAndSaveAllScreens();
+            //Figure out where Your Phone is
+            var YP = GlobalUtils.Utils.GetYourPhoneWindow();
+
+            Screen s;
+            Rectangle r;
+
+            GlobalUtils.Utils.LocateProcessWindowRelativePhysical(YP.Handle, out s, out r);
+
+            //var r = MonitorInfo.GetWindowRect(YP.Handle);
+            
+
+
+
+            //ScreenGrab.CaptureAndSaveAllScreens();
         }
     }
 }
