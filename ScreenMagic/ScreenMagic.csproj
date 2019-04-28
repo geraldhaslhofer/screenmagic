@@ -111,6 +111,8 @@
     <Compile Include="Screenshot.xaml.cs">
       <DependentUpon>Screenshot.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Tagging\Region.cs" />
+    <Compile Include="Tagging\Tagger.cs" />
     <Compile Include="Timeline.cs" />
     <Compile Include="TimelineTest.cs" />
     <Compile Include="Utils.cs" />
@@ -167,6 +169,10 @@
     <Folder Include="Azure\" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Tagging\Tagging.csproj">
+      <Project>{e3696f2b-34be-4b84-ba32-c6633fe54f87}</Project>
+      <Name>Tagging</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Utils\GlobalUtils.csproj">
       <Project>{c3d3758a-c2a5-4a5d-94d5-f26e4eaaa2d7}</Project>
       <Name>GlobalUtils</Name>

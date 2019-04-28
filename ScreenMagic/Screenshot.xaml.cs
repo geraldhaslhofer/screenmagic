@@ -20,7 +20,10 @@ namespace ScreenMagic
     /// </summary>
     public partial class Screenshot : Window
     {
+        //For Tagging mode ---------------------------------------
+        Tagger _tagger = new Tagger(@"c:\test\");
 
+        // -------------------------------------------------------
         MainWindow _mainWindow = null;
 
         // Interaction states

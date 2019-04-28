@@ -19,6 +19,11 @@ namespace ScreenMagic
         {
             return false;
         }
+
+        public static bool IsTaggerMode()
+        {
+            return true;
+        }
     }
 
    
