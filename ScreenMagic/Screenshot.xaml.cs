@@ -134,6 +134,18 @@ namespace ScreenMagic
 
                 System.Drawing.Rectangle selectionPhysical = GetSelectionPhysicalRelative(); 
 
+                //In tagging mode add rectangle and pop question of area semantics
+                if (Config.IsTaggerMode())
+                {
+                    SelectKindWindow w = new SelectKindWindow();
+                    bool? result = w.ShowDialog(); 
+                    if (result != null && result == true)
+                    {
+                        RegionKind k =(RegionKind) Enum.Parse(typeof(RegionKind), w.SelectedItem);
+                        Debug.WriteLine("OK clicked");
+                    }
+                }
+
                 string copiedText = GetTextFromScreenRect(selectionPhysical);
                 MainImage.Source = null;
 
@@ -172,6 +184,7 @@ namespace ScreenMagic
         {
             _ctx = ctx;
             _originalBitmap = img;
+            _tagger.SetBitmap(img);
             MainImage.Source = _originalBitmap;
         }
 

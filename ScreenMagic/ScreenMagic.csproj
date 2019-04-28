@@ -113,6 +113,9 @@
     </Compile>
     <Compile Include="Tagging\Region.cs" />
     <Compile Include="Tagging\Tagger.cs" />
+    <Compile Include="Tagging\SelectKind.xaml.cs">
+      <DependentUpon>SelectKind.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Timeline.cs" />
     <Compile Include="TimelineTest.cs" />
     <Compile Include="Utils.cs" />
@@ -121,6 +124,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="Screenshot.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Tagging\SelectKind.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

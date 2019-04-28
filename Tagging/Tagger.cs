@@ -2,6 +2,7 @@
 using System.Drawing;
 using System.Collections.Generic;
 using System.IO;
+using System.Windows.Media.Imaging;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -16,7 +17,7 @@ namespace ScreenMagic
     {
 
         
-        private Bitmap _bmp;
+        private BitmapSource _bmp;
         private List<Region> _taggedRegion = new List<Region>();
         string _pathToPersist;
         public Tagger(string pathToPersist)
@@ -24,7 +25,7 @@ namespace ScreenMagic
             _pathToPersist = pathToPersist;
         }
 
-        public void SetBitmap(Bitmap bmp)
+        public void SetBitmap(BitmapSource bmp)
         {
             _bmp = bmp;
         }
@@ -38,8 +39,13 @@ namespace ScreenMagic
             //Write bitmap first
             string picId = Guid.NewGuid().ToString();
             string imgPath = Path.Combine(_pathToPersist, picId + ".jpg");
-            _bmp.Save(imgPath, System.Drawing.Imaging.ImageFormat.Jpeg);
-
+            using (var fileStream = new FileStream(imgPath, FileMode.Create))
+            {
+                BitmapEncoder encoder = new JpegBitmapEncoder();
+                encoder.Frames.Add(BitmapFrame.Create(_bmp));
+                encoder.Save(fileStream);
+            }
+            
             //Write each identified rectangle
             string metaDataPath = Path.Combine(_pathToPersist, picId + ".csv");
             StreamWriter w = new StreamWriter(metaDataPath);
