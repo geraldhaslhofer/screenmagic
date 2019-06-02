@@ -107,7 +107,26 @@ namespace ScreenMagic
                 System.Drawing.Rectangle selection = GetSelectionPhysicalRelative();
 
                 var imageWithRect = GlobalUtils.BitmapManipulation.DrawSelectionRectangle(_originalBitmap, selection);
-                //var imageWithRect = RenderUtils.DrawSelectionRectangle(_originalBitmap, _startSelection, _endSelection);
+
+                if (Config.IsTaggerMode())
+                {
+                    List<GlobalUtils.DrawingElement> elems = new List<GlobalUtils.DrawingElement>();
+                    foreach (var item in _tagger.GetTaggedRegions())
+                    {
+                        GlobalUtils.DrawingElement elem = new GlobalUtils.DrawingElement();
+                        elem.rect = item.RegionRect;
+                        elem.brush = Brushes.Green;
+                        elem.pen = new Pen(Brushes.Green, 1.0);
+                        elems.Add(elem);
+                            
+                    }
+
+                    //Tag selected regions
+                    imageWithRect = GlobalUtils.BitmapManipulation.DrawBoxes(imageWithRect, elems);
+
+                }
+
+                //var imageWithRectFinal = RenderUtils.(_originalBitmap, _startSelection, _endSelection);
                 MainImage.Source = imageWithRect;
                 Debug.WriteLine("MouseMove");
             }

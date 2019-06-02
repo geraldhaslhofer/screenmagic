@@ -56,7 +56,10 @@ namespace ScreenMagic
             w.Flush();
             w.Close();
         }
-
+        public List<Region> GetTaggedRegions()
+        {
+            return _taggedRegion;
+        }
     }
     
 }
