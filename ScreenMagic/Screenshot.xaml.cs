@@ -280,7 +280,7 @@ namespace ScreenMagic
 
             //} 
             //else
-            //{
+            //{ 
             //    textToCopy = textResults.Text;
             //}
 
