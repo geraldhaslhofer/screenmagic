@@ -20,8 +20,9 @@ namespace ScreenMagic
     /// </summary>
     public partial class Screenshot : Window
     {
+        private static string SERIALIZE_PATH = @"c:\test\";
         //For Tagging mode ---------------------------------------
-        Tagger _tagger = new Tagger(@"c:\test\");
+        Tagger _tagger = new Tagger(SERIALIZE_PATH);
 
         // -------------------------------------------------------
         MainWindow _mainWindow = null;
@@ -132,39 +133,50 @@ namespace ScreenMagic
 
                 
 
-                System.Drawing.Rectangle selectionPhysical = GetSelectionPhysicalRelative(); 
+                System.Drawing.Rectangle selectionPhysical = GetSelectionPhysicalRelative();
 
                 //In tagging mode add rectangle and pop question of area semantics
                 if (Config.IsTaggerMode())
                 {
                     SelectKindWindow w = new SelectKindWindow();
-                    bool? result = w.ShowDialog(); 
+                    bool? result = w.ShowDialog();
                     if (result != null && result == true)
                     {
-                        RegionKind k =(RegionKind) Enum.Parse(typeof(RegionKind), w.SelectedItem);
+                        RegionKind k = (RegionKind)Enum.Parse(typeof(RegionKind), w.SelectedItem);
                         Debug.WriteLine("OK clicked");
+
+                        Region r = new Region();
+                        r.Kind = k;
+                        r.RegionRect = selectionPhysical;
+                        //Add to the tagged region
+                        _tagger.AddRegion(r);
+                        Debug.WriteLine(r.SerializeToCsv());
                     }
                 }
+                else
+                {
 
-                string copiedText = GetTextFromScreenRect(selectionPhysical);
-                MainImage.Source = null;
 
-                StatusMessageInternal.Text = "Copied text to clipboard" +
-                    Environment.NewLine +
-                    Environment.NewLine +
-                    copiedText;
+                    string copiedText = GetTextFromScreenRect(selectionPhysical);
+                    MainImage.Source = null;
 
-                Utils.SetClipboardText(copiedText);
+                    StatusMessageInternal.Text = "Copied text to clipboard" +
+                        Environment.NewLine +
+                        Environment.NewLine +
+                        copiedText;
 
-                StatusMessage.Visibility = Visibility.Visible;
-                StatusMessageInternal.Visibility = Visibility.Visible;
+                    Utils.SetClipboardText(copiedText);
 
-                Debug.WriteLine("Detected text:" + copiedText);
+                    StatusMessage.Visibility = Visibility.Visible;
+                    StatusMessageInternal.Visibility = Visibility.Visible;
 
-                //Start timer to remove window
-                _timer.Enabled = true;
+                    Debug.WriteLine("Detected text:" + copiedText);
 
-                //Render original image
+                    //Start timer to remove window
+                    _timer.Enabled = true;
+
+                    //Render original image
+                }
             }
 
         }
@@ -279,6 +291,14 @@ namespace ScreenMagic
 
         private void Hide_Click(object sender, RoutedEventArgs e)
         {
+            this.HideWindow();
+        }
+
+        private void Save_Click(object sender, RoutedEventArgs e)
+        {
+            //persist
+            _tagger.Persist();
+            _tagger = new Tagger(SERIALIZE_PATH);
             this.HideWindow();
         }
     }

@@ -14,8 +14,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using Windows.Graphics.Display;
-using Windows.ApplicationModel.UserActivities;
+//using Windows.Graphics.Display;
+//using Windows.ApplicationModel.UserActivities;
 using System.Threading;
 
 namespace ScreenMagic

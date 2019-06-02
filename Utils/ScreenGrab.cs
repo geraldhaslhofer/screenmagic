@@ -59,7 +59,7 @@ namespace GlobalUtils
             g.ReleaseHdc(hdcDestination);
             g.Dispose();
 
-            finalBitmap.Save(@"C:\Users\gerhas\Desktop\test\" + Guid.NewGuid().ToString() + ".jpg", System.Drawing.Imaging.ImageFormat.Jpeg);
+            //finalBitmap.Save(@"C:\Users\gerhas\Desktop\test\" + Guid.NewGuid().ToString() + ".jpg", System.Drawing.Imaging.ImageFormat.Jpeg);
 
             return finalBitmap;
         }

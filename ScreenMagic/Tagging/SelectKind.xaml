@@ -8,7 +8,7 @@
         Title="Select Kind" Height="248" Width="170.406">
     <Grid Margin="0,0,5,0.5">
         <ListBox x:Name="listBoxKinds" HorizontalAlignment="Left" Height="174" VerticalAlignment="Top" Width="158"/>
-        <Button x:Name="buttonOk" Content="Ok" HorizontalAlignment="Left" Margin="104,188,0,0" VerticalAlignment="Top" Width="34" RenderTransformOrigin="2.227,0.425" Click="ButtonOk_Click"/>
+        <Button x:Name="buttonOk" Content="Ok" HorizontalAlignment="Left" Margin="104,188,0,0" VerticalAlignment="Top" Width="34" RenderTransformOrigin="2.227,0.425" Click="ButtonOk_Click" IsDefault="True"/>
         <Button x:Name="buttonCancel" Content="Cancel" HorizontalAlignment="Left" Margin="10,188,0,0" VerticalAlignment="Top" Width="75" Click="ButtonCancel_Click"/>
 
     </Grid>
