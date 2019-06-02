@@ -275,7 +275,7 @@ namespace ScreenMagic
             //                b.Append(" ");
             //            }
             //            textToCopy = b.ToString();
-            //        }
+            //        } 
             //    }
 
             //}
