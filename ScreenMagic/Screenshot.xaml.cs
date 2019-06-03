@@ -115,8 +115,9 @@ namespace ScreenMagic
                     {
                         GlobalUtils.DrawingElement elem = new GlobalUtils.DrawingElement();
                         elem.rect = item.RegionRect;
-                        elem.brush = Brushes.Green;
-                        elem.pen = new Pen(Brushes.Green, 1.0);
+                        Brush paintBrush = Region.GetBrushFromRegionKind(item.Kind);
+                        elem.brush = paintBrush;
+                        elem.pen = new Pen(paintBrush, 1.0);
                         elems.Add(elem);
                             
                     }

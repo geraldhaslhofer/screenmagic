@@ -4,9 +4,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
+using System.Collections;
+using System.Windows.Media;
 namespace ScreenMagic
 {
+
     public enum RegionKind
     {
         Background,
@@ -33,6 +35,20 @@ namespace ScreenMagic
             b.Append(RegionRect.Height.ToString());
             return b.ToString();
         }
+
+        public static System.Windows.Media.Brush GetBrushFromRegionKind(RegionKind kind)
+        {
+            switch (kind)
+            {
+                case RegionKind.Background: return System.Windows.Media.Brushes.Transparent;
+                case RegionKind.Icon: return System.Windows.Media.Brushes.Yellow;
+                case RegionKind.Image: return System.Windows.Media.Brushes.OrangeRed;
+                case RegionKind.Text: return System.Windows.Media.Brushes.LightBlue;
+                case RegionKind.UxElement: return System.Windows.Media.Brushes.Black;
+                default: throw new NotSupportedException("Unknown kind");
+            }
+        }
+
     }
-    
+
 }
