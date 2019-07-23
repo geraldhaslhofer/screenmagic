@@ -41,9 +41,12 @@ namespace TestDevApp
                                     string filename = Path.GetFileNameWithoutExtension(jpeg);
                                     string json = Path.Combine(destDir, filename + ".json");
                                     string rendered = Path.Combine(destDir, filename + ".jpeg");
+                                    string combined = Path.Combine(destDir, filename + "_comb" + ".jpeg");
 
                                     var regions = await OcrProcessor.GetRegions(jpeg);
                                     PixGenerator.GeneratePix(regions, rendered);
+
+                                    Combiner.CombineAndNormalize(jpeg, rendered, combined);
                                 }
 
                             }
@@ -68,6 +71,8 @@ namespace TestDevApp
 
                             }
                             break;
+
+                        
                         default:
                             {
                                 throw new NotSupportedException();

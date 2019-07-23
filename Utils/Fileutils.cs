@@ -6,11 +6,40 @@ using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using System.Drawing;
+using System.Windows.Media.Imaging;
 
 namespace Utils
 {
     public class Fileutils
     {
+        public static void SerializeBitmapSource(BitmapSource target, string destinationPath)
+        {
+            var fileStream = new FileStream(destinationPath, FileMode.Create);
+            
+            BitmapEncoder encoder = new PngBitmapEncoder();
+            encoder.Frames.Add(BitmapFrame.Create(target));
+            encoder.Save(fileStream);
+
+            fileStream.Flush();
+            fileStream.Close();
+
+        }
+
+        public static BitmapSource LoadBitmapSourceFromFile(string path)
+        {
+            FileStream fileStream =
+    new FileStream(path, FileMode.Open, FileAccess.Read);
+
+            var img = new System.Windows.Media.Imaging.BitmapImage();
+            img.BeginInit();
+            img.CacheOption = BitmapCacheOption.OnLoad;
+            img.StreamSource = fileStream;
+            img.EndInit();
+
+            fileStream.Close();
+            return img;
+        }
+
         public static Bitmap DeserializeJpeg(Stream s)
         {
             return (Bitmap)Bitmap.FromStream(s);
@@ -27,6 +56,7 @@ namespace Utils
             FileStream f = new FileStream(path, FileMode.Open);
             byte[] content = new byte[f.Length];
             f.Read(content, 0, (int)f.Length);
+            f.Close();
             return content;
         }
 

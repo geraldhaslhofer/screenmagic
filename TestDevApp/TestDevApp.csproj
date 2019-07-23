@@ -47,6 +47,7 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Combiner.cs" />
     <Compile Include="OcrProcessor.cs" />
     <Compile Include="PixGenerator.cs" />
     <Compile Include="Program.cs" />

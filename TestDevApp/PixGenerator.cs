@@ -42,12 +42,16 @@ namespace TestDevApp
 
             target.Render(visual);
 
-            using (var fileStream = new FileStream(destinationPath, FileMode.Create))
-            {
-                BitmapEncoder encoder = new PngBitmapEncoder();
-                encoder.Frames.Add(BitmapFrame.Create(target));
-                encoder.Save(fileStream);
-            }
+
+            //Remove
+            //{
+            //    var tmp = Combiner.CombineAndNormalizeBitmap(target, target);
+            //    Fileutils.SerializeBitmapSource(tmp, @"c:\data\test\foo.jpg");
+
+            //}
+
+            Fileutils.SerializeBitmapSource(target, destinationPath);
+
 
         }
         //Generate a jpeg based on semanticRegionInfo
