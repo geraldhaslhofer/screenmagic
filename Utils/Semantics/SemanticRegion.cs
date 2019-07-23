@@ -28,5 +28,18 @@ namespace Utils
     {
         [DataMember]
         public List<SemanticRegion> Regions { get; set; }
+
+        public BoundingBox GetBorder()
+        {
+            var border = from x in Regions where x.SemanticType == SemanticType.Border select x;
+            if (border != null && border.Count() > 0) return border.FirstOrDefault().Box;
+            return null;
+        }
+
+        public IEnumerable<SemanticRegion> GetNonBorder()
+        {
+            var nonborder = from x in Regions where x.SemanticType != SemanticType.Border select x;
+            return nonborder;
+        }
     }
 }

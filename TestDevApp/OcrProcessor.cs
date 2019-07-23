@@ -11,12 +11,8 @@ namespace TestDevApp
 {
     class OcrProcessor
     {
-        public static async Task OcrPicture(string source, string destination)
+        public static async Task<SemanticRegions> GetRegions(string source)
         {
-
-
-            
-            
             byte[] content = Fileutils.GetFileFromPath(source);
             MemoryStream m = new MemoryStream(content);
             var bitmap = Fileutils.DeserializeJpeg(m);
@@ -32,7 +28,7 @@ namespace TestDevApp
             circum.Box.X = 0;
             circum.Box.Y = 0;
             circum.Box.Width = bitmap.Width;
-            circum.Box.Height= bitmap.Height;
+            circum.Box.Height = bitmap.Height;
 
             r.Regions.Add(circum);
 
@@ -44,6 +40,13 @@ namespace TestDevApp
                 r.Regions.Add(aRegion);
             }
 
+            return r;
+        }
+
+        public static async Task OcrPicture(string source, string destination)
+        {
+
+            SemanticRegions r = await GetRegions(source);
             Fileutils.SerializeSemanticRegions(r, destination);
         }
     }
