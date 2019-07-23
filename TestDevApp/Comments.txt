@@ -1,2 +1,3 @@
 ﻿-ocr C:\Users\gerhas\AppData\Roaming\UniversalCopy\636994156236727206.jpeg c:\data\parse\636994156236727206.txt
 -render c:\data\parse\636994156236727206.txt c:\data\parse\636994156236727206_render.jpeg
+-batch C:\Users\gerhas\AppData\Roaming\UniversalCopy\ c:\data\parse\

@@ -32,10 +32,16 @@ namespace TestDevApp
 
             r.Regions.Add(circum);
 
-            foreach (var res in ocrResults.BoundingBoxes)
+            //foreach (var res in ocrResults.BoundingBoxes)
+            foreach (var res in ocrResults.Results)
             {
                 SemanticRegion aRegion = new SemanticRegion();
-                aRegion.Box = res;
+                BoundingBox b = new BoundingBox();
+                b.X = res.X;
+                b.Y = res.Y;
+                b.Width = res.Width;
+                b.Height = res.Height;
+                aRegion.Box = b;
                 aRegion.SemanticType = SemanticType.Text;
                 r.Regions.Add(aRegion);
             }
