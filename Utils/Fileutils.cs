@@ -11,6 +11,12 @@ namespace Utils
 {
     public class Fileutils
     {
+        public static Bitmap DeserializeJpeg(Stream s)
+        {
+            return (Bitmap)Bitmap.FromStream(s);
+
+        }
+
         public static Bitmap DeserializeJpeg(string path)
         {
             return (Bitmap)Bitmap.FromFile(path);

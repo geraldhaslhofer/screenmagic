@@ -1,6 +1,7 @@
 ﻿using System;
 using System.CodeDom;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,10 +13,14 @@ namespace TestDevApp
     {
         public static async Task OcrPicture(string source, string destination)
         {
-            var bitmap = Fileutils.DeserializeJpeg(source);
 
 
+            
+            
             byte[] content = Fileutils.GetFileFromPath(source);
+            MemoryStream m = new MemoryStream(content);
+            var bitmap = Fileutils.DeserializeJpeg(m);
+
             OcrResults ocrResults = await OcrSupport.GetOcrResults(content, 1.0);
             SemanticRegions r = new SemanticRegions();
             r.Regions = new List<SemanticRegion>();

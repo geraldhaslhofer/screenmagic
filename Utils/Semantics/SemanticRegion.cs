@@ -19,6 +19,7 @@ namespace Utils
     {
         [DataMember]
         public BoundingBox Box { get; set; }
+        [DataMember]
         public SemanticType SemanticType { get; set; }
     }
 
