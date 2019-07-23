@@ -7,6 +7,7 @@ using System.IO;
 using System.Drawing;
 using Newtonsoft.Json;
 
+
 namespace ScreenMagic
 {
     public class RecordingResult
@@ -67,19 +68,28 @@ namespace ScreenMagic
             FileStream f = new FileStream(filename, FileMode.CreateNew);
             f.Write(jpegEncodedImage, 0, jpegEncodedImage.Count());
             f.Close();
-            
-            //Persist text locally
-            string serializePath = Path.Combine(GetWorkingDir(), prefix + ".json");
-            SerializeOcrResults(results, Path.Combine(serializePath));
+
+            if (results != null)
+            {
+                //Persist text locally
+                string serializePath = Path.Combine(GetWorkingDir(), prefix + ".json");
+                SerializeOcrResults(results, Path.Combine(serializePath));
+            }
 
             id = long.Parse(prefix);
         }
 
-        public async static Task<RecordingResult> ProcessAndPersistScreenshot(Bitmap screen)
+        public async static Task<RecordingResult> ProcessAndPersistScreenshot(Bitmap screen, bool doOcr)
         {
             double scaleFactor = 1;
             byte[] jpegEncodedImage = Utils.SerializeBitmapToJpeg(screen);
-            var results = await OcrUtils.GetOcrResults(jpegEncodedImage, scaleFactor);
+
+            OcrResults results = null;
+
+            if (doOcr)
+            {
+                results = await OcrUtils.GetOcrResults(jpegEncodedImage, scaleFactor);
+            }
 
             long id;
             

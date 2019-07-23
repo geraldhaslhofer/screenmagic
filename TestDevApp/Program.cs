@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using GlobalUtils;
 using System.Windows.Forms;
 using System.Drawing;
+using Utils;
+
 
 namespace TestDevApp
 {
@@ -13,32 +15,28 @@ namespace TestDevApp
     {
         static void Main(string[] args)
         {
-            System.Diagnostics.Debug.WriteLine(System.Windows.Forms.Screen.AllScreens[0].Bounds);
-            System.Diagnostics.Debug.WriteLine(Utils.GetScaleFactorForScreen(Screen.AllScreens[0]));
-            while (true)
+            Main2(args).Wait();
+        }
+
+        static async Task Main2(string[] args)
+        {
+            if (args.Count() > 2)
             {
-                System.Diagnostics.Debug.WriteLine(System.Windows.Forms.Cursor.Position);
+                switch (args[0])
+                {
+                    case "-ocr":
+                        {
+                            await OcrProcessor.OcrPicture(args[1], args[2]);
 
+
+                        }; break;
+
+                    default:
+                        {
+                            throw new NotSupportedException();
+                        };
+                }
             }
-
-
-            ////Figure out where Your Phone is
-            //var YP = GlobalUtils.Utils.GetYourPhoneWindow();
-
-            //Screen s;
-            //Rectangle rPhysical;
-
-            ////IntPtr handle, out Screen screen, out Rectangle windowAbsoluteLogical, out Rectangle windowRelativeLogical, out Rectangle windowRelativePhysical, out double scaleFactor
-
-            //GlobalUtils.Utils.LocateProcessWindowRelativePhysical(YP.Handle, out s, out rPhysical);
-            //GlobalUtils.Utils.CaptureScreenFromRectPhysical(s, rPhysical);
-
-            ////var r = MonitorHelper.GetWindowRect(YP.Handle);
-
-
-
-
-            ////ScreenGrab.CaptureAndSaveAllScreens();
         }
     }
 }

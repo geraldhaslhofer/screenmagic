@@ -57,7 +57,7 @@ namespace ScreenMagic
         private bool _isAttachedToYourPhone = false;
 
         //Recording timer
-        System.Timers.Timer _timerRecord = new System.Timers.Timer(5000);
+        System.Timers.Timer _timerRecord = new System.Timers.Timer(1000);
         private bool _isRecording = false;
 
         public double _scale = 1;
@@ -164,15 +164,17 @@ namespace ScreenMagic
 
         private async void _timerRecord_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
-            throw new NotImplementedException("Todo");
-            //_timerRecord.Enabled = false;
-            //var screen = _bitmapProvider.CaptureScreenshot();
             
-            //await Recording.ProcessAndPersistScreenshot(screen);
-            //if (_isRecording)
-            //{
-            //    _timerRecord.Enabled = true;
-            //}
+            _timerRecord.Enabled = false;
+            Bitmap bmp;
+            CaptureContext ctx;
+            _bitmapProvider.CaptureScreenshot(out bmp, out ctx);
+            await Recording.ProcessAndPersistScreenshot(bmp, false);
+
+            if (_isRecording)
+            {
+                _timerRecord.Enabled = true;
+            }
         }
 
       
