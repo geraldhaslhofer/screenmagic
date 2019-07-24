@@ -26,13 +26,15 @@ namespace ScreenMagic
         Minimized = 3
     }
 
-
+    
 
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
     public partial class MainWindow : Window
     {
+        public static int TIME_BETWEEN_SCREENSHOTS_MS = 2000;
+
         //Notifications area
         private System.Windows.Forms.NotifyIcon notifyIcon = null;
         private System.Windows.Forms.ContextMenu contextMenu = null;
@@ -57,7 +59,7 @@ namespace ScreenMagic
         private bool _isAttachedToYourPhone = false;
 
         //Recording timer
-        System.Timers.Timer _timerRecord = new System.Timers.Timer(1000);
+        System.Timers.Timer _timerRecord = new System.Timers.Timer(TIME_BETWEEN_SCREENSHOTS_MS);
         private bool _isRecording = false;
 
         public double _scale = 1;

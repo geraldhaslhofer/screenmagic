@@ -9,6 +9,7 @@ using System.IO;
 using System.Windows;
 using System.Globalization;
 using Utils;
+using GlobalUtils;
 
 namespace TestDevApp
 {
@@ -25,7 +26,10 @@ namespace TestDevApp
             BitmapSource src2 = Fileutils.LoadBitmapSourceFromFile(pic2);
 
             var combined = CombineAndNormalizeBitmap(src1, src2);
-            Fileutils.SerializeBitmapSource(combined, destinationPath);
+
+            var combined24 = BitmapManipulation.ConvertTo24bit(combined);
+
+            Fileutils.SerializeBitmapSource(combined24, destinationPath);
 
         }
 
@@ -41,8 +45,8 @@ namespace TestDevApp
         public static BitmapSource CombineAndNormalizeBitmap(BitmapSource src1, BitmapSource src2)
         {
 
-            var scaled1 = NormalizeBitmap(src1);
-            var scaled2 = NormalizeBitmap(src2);
+            var scaled2 = NormalizeBitmap(src1);
+            var scaled1 = NormalizeBitmap(src2);
 
             // bmp is the original BitmapImage
             var target = new RenderTargetBitmap((int)TRAINING_SIZE * 2, (int)TRAINING_SIZE, DPI,DPI, PixelFormats.Pbgra32);

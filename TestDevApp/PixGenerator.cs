@@ -30,6 +30,8 @@ namespace TestDevApp
 
             using (var r = visual.RenderOpen())
             {
+                //Draw white background
+                r.DrawRectangle(Brushes.White, new Pen(Brushes.White, 1.0), new Rect(0, 0, b.Width, b.Height));
 
 
                 foreach (var aRegion in regions.GetNonBorder())

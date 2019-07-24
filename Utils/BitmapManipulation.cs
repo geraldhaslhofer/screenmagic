@@ -19,6 +19,18 @@ namespace GlobalUtils
 
     public class BitmapManipulation
     {
+        public static BitmapSource ConvertTo24bit(BitmapSource src)
+        {
+            FormatConvertedBitmap newFormatedBitmapSource = new FormatConvertedBitmap();
+            newFormatedBitmapSource.BeginInit();
+            newFormatedBitmapSource.Source = src;
+            
+            newFormatedBitmapSource.DestinationFormat = PixelFormats.Rgb24;
+            newFormatedBitmapSource.EndInit();
+            return newFormatedBitmapSource;
+
+        }
+
         public static BitmapSource DrawSelectionRectangle(BitmapSource src, System.Drawing.Rectangle rec)
         {
 
