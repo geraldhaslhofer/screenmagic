@@ -55,6 +55,8 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="Data\facades.zip" />
+    <None Include="Data\rawdata.zip" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Utils\GlobalUtils.csproj">
